@@ -1,0 +1,65 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Causal Inference for Practitioners"
+  subtitle: "A Python Approach"
+  author: "Troy Altus"
+  date: today
+  repo-url: https://github.com/altustd/causal-inference-python-ebook
+  repo-actions: [edit, issue]
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - part: "Part I: Foundations"
+      chapters:
+        - chapters/01-why-correlation.qmd
+        - chapters/02-dags.qmd
+        - chapters/03-potential-outcomes.qmd
+        - chapters/04-confounding-colliders.qmd
+    - part: "Part II: Core Methods"
+      chapters:
+        - chapters/05-rct-ab-testing.qmd
+        - chapters/06-matching-psm.qmd
+        - chapters/07-instrumental-variables.qmd
+        - chapters/08-regression-discontinuity.qmd
+        - chapters/09-diff-in-diff.qmd
+        - chapters/10-synthetic-control.qmd
+    - part: "Part III: Modern Extensions"
+      chapters:
+        - chapters/11-causal-ml-cate.qmd
+        - chapters/12-double-ml.qmd
+        - chapters/13-causal-discovery.qmd
+    - part: "Part IV: Practice"
+      chapters:
+        - chapters/14-observational-data.qmd
+        - chapters/15-case-studies.qmd
+        - chapters/16-pipeline.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      dark: darkly
+      light: flatly
+    code-fold: true
+    code-tools: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    highlight-style: github-dark
+    fig-align: center
+    fig-width: 10
+    fig-height: 5
+  pdf:
+    documentclass: scrbook
+    number-sections: true
+
+execute:
+  freeze: auto
+  echo: true
+  warning: false
+  message: false

@@ -1,0 +1,26 @@
+# Preface {.unnumbered}
+
+This book teaches causal inference for practitioners who work with Python and real-world observational data.
+
+It is organized around Pearl's Ladder of Causation — moving from association to intervention to counterfactual — with working Python code for every method.
+
+## How to Use This Book
+
+- **Part I** builds the conceptual foundation. Don't skip it.
+- **Part II** covers the six core identification strategies. Each chapter stands alone.
+- **Part III** connects causal inference to modern ML.
+- **Part IV** puts it all together with case studies and a full pipeline.
+
+## Computing Environment
+
+All code uses Python 3.10+. To replicate:
+
+```bash
+conda create -n causal-inf python=3.10
+conda activate causal-inf
+pip install dowhy econml linearmodels pgmpy statsmodels networkx matplotlib plotly pandas numpy
+```
+
+## Acknowledgments
+
+Built with [Quarto](https://quarto.org) and a lot of counterfactual thinking.
