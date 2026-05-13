@@ -1,0 +1,70 @@
+---
+title: "What Machines Can and Cannot Learn"
+---
+
+::: {.callout-note icon=false}
+## Learning Objectives
+
+- Understand the symbol grounding problem and its implications for AI
+- Describe common sense reasoning and why it has proved so difficult to automate
+- Articulate the role of causality as the missing ingredient in current AI systems
+- Reflect on what the comparison between human and machine learning reveals about both
+:::
+
+## The Unimpressed Statistician
+
+There is a pattern in the history of artificial intelligence that repeats with uncomfortable regularity. A system learns to perform a task at superhuman levels — playing chess, recognizing faces, translating text — and the announcement of its achievement arrives in breathless language: the machine *understands*, the machine *knows*, the machine *thinks*. Then a researcher finds a case where the system fails catastrophically on what any child would find trivial, and the breathlessness subsides.
+
+A face recognition system trained on millions of photographs fails to recognize the same face when the lighting changes. A language model that can write a convincing legal brief confidently asserts that Abraham Lincoln was the 35th president. An image classifier that correctly labels a thousand dogs misclassifies a picture of a dog wearing a party hat.
+
+These failures are not random noise. They reveal a structural difference between what these systems have learned and what we mean, intuitively, by *understanding*.
+
+## The Symbol Grounding Problem
+
+In 1990, the philosopher and cognitive scientist Stevan Harnad posed what he called the symbol grounding problem. A Chinese Room (Searle's famous thought experiment) processes Chinese symbols by looking up transformation rules in a rulebook. The output may be indistinguishable from that of a Chinese speaker, but the symbols have no meaning to the system — they are manipulated without any connection to the things they represent.
+
+Language models face a version of this problem. They learn statistical patterns over tokens — over words and subwords in text. The tokens acquire meaning within the model through their statistical relationships to other tokens. But the connection between the token *dog* and the actual sensation of a dog — the texture of fur, the smell, the weight of a head on your lap — is nowhere in the training data.
+
+Human concepts are grounded. They are connected, through embodied experience, to the world they refer to. Machine concepts are relational: they know how symbols relate to other symbols, but not what any of them feel like.
+
+## Common Sense and Open Worlds
+
+Common sense knowledge is the hardest kind to encode, because it is largely implicit. People know that:
+
+- Objects fall when unsupported
+- Other people have goals and beliefs
+- Time flows in one direction
+- A glass of water remains a glass of water when you turn your back
+- Promises create obligations
+
+None of this appears in a typical training corpus as a stated proposition. It is background structure, assumed by every sentence and never explicitly stated, because every reader already knows it.
+
+Current AI systems struggle with common sense precisely because it is never explicitly articulated — it is infrastructure, not content.
+
+## Causality as the Missing Ingredient
+
+Pearl's observation is pointed: current AI systems, however capable, are fundamentally Rung 1 machines. They are extraordinarily good at detecting and exploiting patterns in data. They can generalize these patterns to new examples with striking reliability. But they do not — and in their current form, cannot — answer questions about what would happen if something *changed*.
+
+This is not merely a benchmark failure. It is a structural feature. A system trained to predict outcomes from observational data has no way to distinguish an effect from a confounder, a cause from a symptom. It cannot reason about interventions it has never seen, because interventions are not in the observational distribution.
+
+The path forward likely involves augmenting statistical learning with causal structure — either learned from data (causal discovery), injected by domain experts (structural models), or inferred through active interaction with the world (the way infants learn it).
+
+## What This Reveals About Human Intelligence
+
+The comparison is instructive in both directions. The things machines do easily — processing millions of examples, detecting subtle statistical regularities, retaining exact records — are things humans do poorly. The things humans do effortlessly — reasoning about unseen interventions, learning from a single example, understanding novel situations through analogy — are precisely what machines find hardest.
+
+This asymmetry suggests that human intelligence is not simply a slower, noisier version of what machine learning does at scale. It may be organized around fundamentally different principles: causal models, embodied grounding, analogical reasoning, and the kind of flexible, open-ended cognition that Rung 3 counterfactual thinking requires.
+
+Whether machines will eventually acquire these properties is an open question. What is clear is that the question is worth asking — and that understanding the architecture of human intelligence is inseparable from understanding what current AI systems lack.
+
+## Summary
+
+- Repeated AI systems exhibit a pattern of impressive performance followed by categorical failure on tasks humans find trivial — revealing a structural gap between pattern-matching and understanding.
+- The symbol grounding problem identifies the missing link: machine symbols are related to other symbols, but not grounded in embodied experience the way human concepts are.
+- Common sense knowledge is implicit infrastructure — never stated, always assumed — which makes it extraordinarily difficult to encode in a system that learns from explicit text.
+- Causality is the structural missing ingredient: current AI systems are Rung 1 pattern-matchers that cannot reason about interventions or counterfactuals.
+- The contrast between human and machine intelligence illuminates both: each is structured around different strengths and organized around different principles.
+
+## Further Reading
+
+Pearl's critique of current AI can be found in @pearl2018book, Chapter 1. Dreyfus's *What Computers Can't Do* (1972, revised 1979) anticipated many of these limitations decades before deep learning existed — and remains startlingly relevant. For the common sense problem specifically, Davis and Marcus (2015), *Commonsense Reasoning and Commonsense Knowledge in Artificial Intelligence*, is the standard survey.

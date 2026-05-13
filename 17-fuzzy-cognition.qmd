@@ -1,0 +1,95 @@
+---
+title: "Fuzzy Cognition and Prototype Theory"
+---
+
+::: {.callout-note icon=false}
+## Learning Objectives
+
+- Describe Eleanor Rosch's prototype theory and its evidence base
+- Explain graded category membership and how it differs from classical categorization
+- Connect fuzzy set theory (Part III) to the cognitive science of concepts
+- Simulate prototype-based classification and compare with crisp rule-based classification
+:::
+
+## What Is a Bird?
+
+Ask someone to name a bird, and they will say "robin" or "sparrow" before they say "penguin" or "ostrich." Both are birds. Both satisfy the biological definition. But the robin *feels* more like a bird.
+
+This asymmetry — some instances of a category being better examples than others — is the empirical starting point for Eleanor Rosch's prototype theory. In a series of experiments in the 1970s, Rosch documented that category membership is graded, not binary. People rate robins as more "birdy" than penguins, chairs as more "furniture-like" than telephones, apples as better examples of fruit than olives.
+
+Categories, Rosch concluded, are organized around **prototypes**: abstract representations of the most typical member. Membership is determined by similarity to the prototype, not by possession of a set of necessary and sufficient features.
+
+## The Classical View and Its Problems
+
+The classical view of concepts, dominant from Aristotle through much of the twentieth century, held that every concept corresponds to a definition: a set of necessary and sufficient features. A bachelor is an unmarried adult male. Everything that is a bachelor has all three features; everything lacking any one of them is not a bachelor.
+
+Rosch's work showed that most concepts — certainly all natural concepts, and most everyday artificial ones — do not behave this way. People cannot agree on the defining features of "game" (Wittgenstein had noticed this earlier). They disagree about edge cases. They show graded typicality effects. The classical view predicts none of this.
+
+## Fuzzy Sets and Prototype Theory
+
+The connection to fuzzy set theory is direct. If membership in a concept is graded, then the concept is a fuzzy set: its membership function assigns each possible member a degree of belonging between 0 and 1, where 1 is the prototype and 0 is complete non-membership.
+
+The typicality rating that people assign to category members is, functionally, an estimate of the membership function. A robin has high membership in BIRD. A penguin has moderate membership. A bat has low but non-zero membership (it flies, and people sometimes mistakenly classify it as a bird).
+
+This framing makes prototype theory mathematically precise. It also connects cognitive science directly to the fuzzy inference systems of Chapter 10 — the same mathematics underlies both the ventilation controller and the way a human brain decides whether a platypus is a mammal.
+
+```{python}
+#| label: fig-prototype-classification
+#| fig-cap: "Prototype-based vs. crisp classification of 'bird-like' creatures. Prototypical birds (left) have high membership; atypical birds (right) trail off gradually."
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Features: [flies, sings, small, warm-blooded, has-feathers, lays-eggs]
+# Prototype bird: all features present
+prototype = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+creatures = {
+    "Robin":       np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+    "Sparrow":     np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+    "Eagle":       np.array([1.0, 0.3, 0.2, 1.0, 1.0, 1.0]),
+    "Penguin":     np.array([0.0, 0.2, 0.3, 1.0, 1.0, 1.0]),
+    "Ostrich":     np.array([0.0, 0.1, 0.1, 1.0, 1.0, 1.0]),
+    "Bat":         np.array([1.0, 0.2, 0.5, 1.0, 0.0, 1.0]),
+    "Butterfly":   np.array([1.0, 0.0, 0.5, 0.0, 0.0, 0.0]),
+    "Fish":        np.array([0.0, 0.0, 0.3, 1.0, 0.0, 1.0]),
+}
+
+# Prototype membership = cosine similarity to prototype
+def membership(features):
+    return np.dot(features, prototype) / (np.linalg.norm(features) * np.linalg.norm(prototype) + 1e-9)
+
+# Crisp rule: is_bird = flies AND warm-blooded AND has-feathers
+def crisp_bird(features):
+    return float(features[0] > 0.5 and features[3] > 0.5 and features[4] > 0.5)
+
+names = list(creatures.keys())
+fuzzy = [membership(v) for v in creatures.values()]
+crisp = [crisp_bird(v) for v in creatures.values()]
+
+x = np.arange(len(names))
+width = 0.35
+
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.bar(x - width/2, fuzzy, width, label='Prototype (fuzzy) membership', color='#4e79a7', alpha=0.85)
+ax.bar(x + width/2, crisp, width, label='Crisp rule (flies + warm + feathers)', color='#e15759', alpha=0.85)
+ax.set_xticks(x)
+ax.set_xticklabels(names, rotation=30, ha='right')
+ax.set_ylabel("Degree of membership in BIRD")
+ax.set_ylim(0, 1.15)
+ax.set_title("Prototype vs. crisp classification: gradual vs. sharp boundaries")
+ax.legend()
+plt.tight_layout()
+plt.show()
+```
+
+## Summary
+
+- Prototype theory holds that concepts are organized around typical examples (prototypes), not definitions; membership is graded, not binary.
+- Rosch's experiments established that typicality ratings are stable, cross-cultural, and predict real cognitive effects (faster reaction times, higher agreement, better recall for typical members).
+- Fuzzy set theory provides the mathematical formalization of prototype theory: the typicality rating is the membership function value.
+- Crisp rule-based systems and prototype-based systems make systematically different predictions for edge cases and atypical members — and human data consistently favors the graded view.
+
+## Further Reading
+
+@rosch1978principles is the foundational paper. Lakoff's *Women, Fire, and Dangerous Things* (1987) extends prototype theory to linguistics and is one of the most thought-provoking books in cognitive science. For the connection to formal concept learning, Tenenbaum and Griffiths (2001), *Generalization, Similarity, and Bayesian Inference*, provides a Bayesian account of concept learning.

@@ -1,0 +1,38 @@
+/* Uncertain Minds — custom styles */
+
+/* Slightly warmer body text */
+body {
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+/* Chapter opening — give the first paragraph a little room */
+.chapter > p:first-of-type {
+  font-size: 1.1rem;
+}
+
+/* Callout blocks */
+.callout {
+  border-radius: 4px;
+}
+
+/* Code blocks — slightly smaller font to distinguish from prose */
+pre code {
+  font-size: 0.88rem;
+}
+
+/* Figure captions */
+figcaption {
+  font-size: 0.9rem;
+  color: #555;
+  font-style: italic;
+  text-align: center;
+  margin-top: 0.4rem;
+}
+
+/* Part title pages */
+.quarto-part-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}

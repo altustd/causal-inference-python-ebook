@@ -1,0 +1,138 @@
+---
+title: "User Manual"
+subtitle: "Uncertain Minds: Causal Inference, Bayesian Reasoning, and the Science of Learning"
+author: "Troy Altus"
+date: "May 2026"
+format:
+  pdf:
+    documentclass: article
+    geometry:
+      - top=1in
+      - bottom=1in
+      - left=1.25in
+      - right=1in
+    colorlinks: true
+    toc: true
+    toc-depth: 2
+    number-sections: true
+execute:
+  echo: false
+---
+
+\newpage
+
+# Cover {.unnumbered}
+
+**Title:** Uncertain Minds
+
+**Subtitle:** Causal Inference, Bayesian Reasoning, and the Science of Learning
+
+**Author:** Troy Altus
+
+**Date:** May 2026
+
+**Version:** 1.0
+
+\newpage
+
+# Quick Start
+
+**Read online (recommended):**
+
+1. Open your browser and go to: `https://altustd.github.io/causal-inference-python-ebook/`
+2. Use the sidebar to navigate between chapters.
+3. Use the search icon (top right) to search the full text.
+
+**Download PDF:**
+
+On the online version, click the download icon (top right of any page) and select PDF.
+
+**Run code locally:** See Section 4.
+
+\newpage
+
+# HTML Navigation
+
+The HTML version is the primary format. Key features:
+
+- **Sidebar:** Full table of contents with part and chapter navigation.
+- **Search:** Click the magnifying glass icon or press `/` to search all text, equations, and code.
+- **Code folding:** Click "Code" buttons to show or hide individual code blocks.
+- **Dark mode:** Toggle in the top navigation bar.
+- **Equation rendering:** All equations use MathJax; they render in any modern browser.
+
+# Reproducing the Code
+
+All Python code in the book is executable and reproducible.
+
+## Install pixi
+
+```bash
+# macOS / Linux
+curl -fsSL https://pixi.sh/install.sh | bash
+
+# Windows (PowerShell)
+iwr -useb https://pixi.sh/install.ps1 | iex
+```
+
+## Clone and Set Up
+
+```bash
+git clone https://github.com/altustd/causal-inference-python-ebook.git
+cd causal-inference-python-ebook
+pixi install
+pixi run setup
+```
+
+## Render Locally
+
+```bash
+pixi run render       # HTML → docs/index.html
+pixi run render-pdf   # PDF → docs/Uncertain-Minds.pdf
+pixi run preview      # live preview at http://localhost:4321
+```
+
+# How to Cite
+
+```
+Altus, T. (2026). Uncertain Minds: Causal Inference, Bayesian Reasoning,
+and the Science of Learning. https://altustd.github.io/causal-inference-python-ebook/
+```
+
+BibTeX:
+
+```bibtex
+@book{altus2026uncertain,
+  title     = {Uncertain Minds: Causal Inference, Bayesian Reasoning,
+               and the Science of Learning},
+  author    = {Altus, Troy},
+  year      = {2026},
+  url       = {https://altustd.github.io/causal-inference-python-ebook/}
+}
+```
+
+# Glossary
+
+**Bayesian inference:** The process of updating prior beliefs in light of new evidence, using Bayes' theorem.
+
+**Causal inference:** The discipline concerned with identifying cause-and-effect relationships from data.
+
+**Confounders:** Variables that influence both a treatment and an outcome, creating spurious associations.
+
+**DAG (Directed Acyclic Graph):** A graph with directed edges and no cycles, used to encode causal structure.
+
+**Do-calculus:** Pearl's formal language for reasoning about interventions.
+
+**Fuzzy set:** A set whose members have graded (partial) membership rather than all-or-nothing membership.
+
+**Membership function:** A function mapping each element to its degree of membership in a fuzzy set.
+
+**MCMC:** Markov Chain Monte Carlo — a class of algorithms for sampling from probability distributions.
+
+**Posterior:** The updated probability distribution after incorporating observed data.
+
+**Prior:** The probability distribution over parameters before observing data.
+
+**Prototype:** The most typical or central member of a category, around which the category is organized.
+
+**Reinforcement learning:** A learning framework in which an agent learns a policy by maximizing cumulative reward through interaction with an environment.

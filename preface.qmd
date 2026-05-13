@@ -1,0 +1,36 @@
+# Preface {.unnumbered}
+
+## Why This Book {.unnumbered}
+
+There is a peculiar situation at the center of modern science and technology. We have built machines that can recognize faces in a crowd, translate between languages that took humans decades to learn, and beat the world's best players at games of almost incomprehensible complexity. We call these machines intelligent. And yet, presented with a simple question — *did this drug cause the patient to recover?* — they go silent. The very thing a child grasps instinctively, the idea that one thing makes another thing happen, remains surprisingly difficult to capture in code.
+
+This book is about that gap, and what it reveals about the nature of learning itself.
+
+The journey begins with probability — not as a bookkeeping device for gamblers, but as a language for expressing degrees of belief. It moves through causal inference, the young and somewhat revolutionary discipline that gave us mathematical tools for reasoning about cause and effect. It passes through the strange territory of fuzzy logic, where heaps become heaps gradually, not all at once. It surveys the landscape of learning algorithms, from the humble linear regression to the sprawling architectures of deep learning. And it ends by turning the lens inward: how does the three-pound organ inside your skull do any of this?
+
+The thread running through all of it is uncertainty — how to quantify it, how to reason through it, and what happens when we pretend it isn't there.
+
+## Who This Book Is For {.unnumbered}
+
+This book was written for the curious. A background in science, engineering, or mathematics will make the technical sections more comfortable, but it is not required. Where equations appear, they are explained in plain language before they are written down. Where code appears, it illustrates a concept — it does not replace the explanation.
+
+If you have been told that statistics is about memorizing formulas, or that machine learning is magic, or that causality is too philosophical to be useful — this book disagrees with all of that, and it intends to show why.
+
+## How to Read It {.unnumbered}
+
+The five parts build on each other, but not rigidly. Parts I and II (probability, Bayesian reasoning, and causal inference) form the conceptual backbone. Part III (fuzzy logic) can be read independently. Part IV (learning algorithms) assumes Parts I–II. Part V (cognition) assumes everything before it, but rewards the reader who has followed the full arc.
+
+Each chapter opens with learning objectives — not to be examined on, but to orient you before you dive in. Each chapter closes with a summary and suggestions for further reading, for those who want to go deeper than this book goes.
+
+The code examples use Python and run inside the project's `pixi` environment. Instructions for setting this up are in Appendix B.
+
+## A Note on Style {.unnumbered}
+
+Textbooks often present a subject as if it arrived fully formed, clean and inevitable, handed down from some mathematical heaven. The reality is messier and more interesting. The ideas in this book were argued over, discarded, rediscovered, and fought about — sometimes for decades. Where that history is worth telling, it is told.
+
+The goal is not to simplify. It is to be clear.
+
+---
+
+*Troy Altus*
+*May 2026*

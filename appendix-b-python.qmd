@@ -1,0 +1,102 @@
+---
+title: "Python Setup and Code Reference"
+---
+
+All code in this book runs inside a `pixi`-managed Python environment. This appendix explains how to set it up and reproduce any example from the text.
+
+## Installing pixi {.unnumbered}
+
+pixi is a fast cross-platform package manager. Install it with:
+
+```bash
+# macOS / Linux
+curl -fsSL https://pixi.sh/install.sh | bash
+
+# Windows (PowerShell)
+iwr -useb https://pixi.sh/install.ps1 | iex
+```
+
+## Setting Up the Environment {.unnumbered}
+
+From the root of the repository:
+
+```bash
+pixi install          # download and install all packages
+pixi run setup        # register the Jupyter kernel
+```
+
+This creates a self-contained environment in `.pixi/envs/default/`. It does not touch your system Python or any other environments you have installed.
+
+## Rendering the Book {.unnumbered}
+
+```bash
+pixi run render       # build HTML → docs/
+pixi run render-pdf   # build PDF → docs/
+pixi run preview      # live preview in browser (auto-reloads on changes)
+```
+
+The `render` task sets `QUARTO_PYTHON` automatically so Quarto uses the pixi environment's Python.
+
+## Key Libraries {.unnumbered}
+
+| Library | Purpose | First used |
+|---|---|---|
+| `numpy` | Numerical arrays, linear algebra | Ch 1 |
+| `scipy` | Statistical distributions, optimization | Ch 2 |
+| `matplotlib` | Static plots | Ch 1 |
+| `plotly` | Interactive plots (HTML output) | Ch 3 |
+| `pandas` | Tabular data | Ch 4 |
+| `scikit-learn` | ML algorithms | Ch 11 |
+| `pymc` | Bayesian modeling, MCMC | Ch 3 |
+| `networkx` | Graph structures | Ch 5 |
+| `scikit-fuzzy` | Fuzzy sets and inference | Ch 9–10 |
+| `pgmpy` | Probabilistic graphical models | Ch 5 |
+| `dowhy` | Causal effect estimation | Ch 13 |
+
+## Common Patterns {.unnumbered}
+
+**Random number generation (reproducible):**
+
+```python
+import numpy as np
+rng = np.random.default_rng(seed=42)   # seed for reproducibility
+x = rng.normal(0, 1, 100)
+```
+
+**Plotting (matplotlib):**
+
+```python
+import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(x, y, color="#4e79a7", linewidth=2)
+ax.set_xlabel("x"); ax.set_ylabel("y")
+plt.tight_layout()
+plt.show()
+```
+
+**Bayesian model (PyMC):**
+
+```python
+import pymc as pm
+with pm.Model() as model:
+    mu = pm.Normal("mu", mu=0, sigma=1)
+    obs = pm.Normal("obs", mu=mu, sigma=0.5, observed=data)
+    trace = pm.sample(1000, tune=500, progressbar=False)
+```
+
+**Fuzzy set (scikit-fuzzy):**
+
+```python
+import numpy as np
+import skfuzzy as fuzz
+x = np.arange(0, 101, 1)
+membership = fuzz.trimf(x, [20, 50, 80])   # triangular MF
+```
+
+## Troubleshooting {.unnumbered}
+
+**`No module named yaml` when running `quarto render` directly:** Always use `pixi run render`, not `quarto render` directly. The task sets `QUARTO_PYTHON` to the correct interpreter.
+
+**Slow first render:** PyMC compiles models with `pytensor` on first use; subsequent renders are faster.
+
+**`pixi install` fails on Windows for `pymc`:** `pymc` is available on conda-forge for `win-64`; if the lock file is causing issues, delete `pixi.lock` and run `pixi install` again.

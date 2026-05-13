@@ -1,0 +1,95 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Uncertain Minds"
+  subtitle: "Causal Inference, Bayesian Reasoning, and the Science of Learning"
+  author: "Troy Altus"
+  date: "May 2026"
+  repo-url: https://github.com/altustd/causal-inference-python-ebook
+  search: true
+  downloads: [pdf]
+
+  chapters:
+    - preface.qmd
+    - part: "Part I: Foundations of Reasoning Under Uncertainty"
+      chapters:
+        - index.qmd
+        - 02-probability-as-belief.qmd
+        - 03-bayesian-inference.qmd
+    - part: "Part II: Causal Inference"
+      chapters:
+        - 04-why-correlation-lies.qmd
+        - 05-structural-causal-models.qmd
+        - 06-interventions-do-calculus.qmd
+        - 07-counterfactuals.qmd
+    - part: "Part III: Fuzzy Logic and Vague Reasoning"
+      chapters:
+        - 08-limits-of-logic.qmd
+        - 09-fuzzy-sets.qmd
+        - 10-fuzzy-inference.qmd
+    - part: "Part IV: Advanced Learning Algorithms"
+      chapters:
+        - 11-regression-to-neural-nets.qmd
+        - 12-deep-learning.qmd
+        - 13-causal-ml.qmd
+        - 14-reinforcement-learning.qmd
+    - part: "Part V: Cognition and the Learning Machine"
+      chapters:
+        - 15-bayesian-brain.qmd
+        - 16-human-causal-reasoning.qmd
+        - 17-fuzzy-cognition.qmd
+        - 18-what-machines-cannot-learn.qmd
+    - references.qmd
+
+  appendices:
+    - appendix-a-math.qmd
+    - appendix-b-python.qmd
+
+bibliography: references.bib
+
+language:
+  chapter-title: "Section"
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    fig-align: center
+    fig-width: 8
+    fig-height: 5
+    highlight-style: github
+    html-math-method: mathjax
+    include-after-body: _roman-numerals.html
+    mermaid:
+      theme: neutral
+  pdf:
+    documentclass: book
+    classoption: [letterpaper, 11pt]
+    geometry:
+      - top=1in
+      - bottom=1in
+      - left=1.25in
+      - right=1in
+    number-sections: true
+    colorlinks: true
+    toc: true
+    toc-depth: 3
+    fig-pos: "H"
+    keep-tex: false
+    include-in-header:
+      text: |
+        \renewcommand\thechapter{\Roman{chapter}}
+
+jupyter: causal-inference
+
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: false

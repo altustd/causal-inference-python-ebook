@@ -1,0 +1,78 @@
+---
+title: "The Limits of Classical Logic"
+---
+
+::: {.callout-note icon=false}
+## Learning Objectives
+
+- State the laws of classical (two-valued) logic and their limitations for real-world categories
+- Understand the Sorites Paradox and what it reveals about vague predicates
+- Describe the key developments in multivalued logic that preceded fuzzy logic
+- Demonstrate classical Boolean logic in Python and show where it breaks down
+:::
+
+## Aristotle's Two-Valued World
+
+For most of the history of Western thought, logic was binary. A proposition was either true or false. A thing either belonged to a category or it did not. Aristotle's law of excluded middle — *tertium non datur*, there is no third option — seemed like a foundational truth about the universe, as natural as the fact that a light switch is either on or off.
+
+This worked beautifully for the kinds of propositions that interested ancient mathematicians. "7 is a prime number" is true. "7 is an even number" is false. There is no middle ground.
+
+It works less beautifully in the world most of us inhabit.
+
+Is a virus alive? Is this color red or orange? Is this person tall? Is 10,000 dollars a large amount of money? Each of these questions has obvious answers that sit in neither the true nor false bin but somewhere in between. Classical logic, presented with "is this person bald?" has no choice but to answer yes or no. Our intuitions rebel.
+
+## The Sorites Paradox
+
+The Greeks noticed this problem. The Sorites Paradox — from *soros*, the Greek word for heap — goes like this:
+
+One grain of sand is not a heap. If $n$ grains of sand is not a heap, then $n+1$ grains is not a heap either. Therefore, by induction: no number of grains of sand is a heap.
+
+The argument is formally valid, but the conclusion is absurd. The fault lies not in the logic but in the premise that the predicate "heap" has a sharp boundary. It does not. Heapness accumulates gradually, and classical logic has no way to represent gradual accumulation.
+
+This is not a philosophical curiosity. It is a structural limitation of the two-valued framework.
+
+## Toward Many Values
+
+By the early twentieth century, logicians were experimenting with alternatives. Jan Łukasiewicz proposed three-valued logic in 1920, adding a third value for "possible" or "indeterminate" — useful for future-contingent propositions like "there will be a sea battle tomorrow." Emil Post generalized this to $n$-valued logics.
+
+These systems retained the idea that truth values come from a discrete set. The leap to fuzzy logic, proposed by Lotfi Zadeh in 1965, was to let truth values range over the entire continuous interval $[0, 1]$. This small change — from discrete to continuous — had large consequences, as we will see in the next two chapters.
+
+```{python}
+#| label: fig-boolean-limits
+#| fig-cap: "A Boolean (crisp) membership function for 'tall' cannot represent the gradual nature of height categories."
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+heights = np.linspace(140, 220, 500)
+
+# Classical (crisp) membership: tall if >= 180 cm
+crisp_tall = (heights >= 180).astype(float)
+
+fig, ax = plt.subplots(figsize=(9, 4))
+ax.plot(heights, crisp_tall, color="#e15759", linewidth=2.5, label="Classical: tall if ≥ 180 cm")
+ax.axvline(180, color="#e15759", linestyle="--", alpha=0.5)
+ax.set_xlabel("Height (cm)")
+ax.set_ylabel("Membership in 'tall'")
+ax.set_title("The problem with classical logic for gradual categories")
+ax.set_ylim(-0.1, 1.2)
+ax.set_yticks([0, 0.5, 1])
+ax.set_yticklabels(["False (0)", "—", "True (1)"])
+ax.legend()
+ax.annotate("Is 179.9 cm\nnot tall at all?", xy=(179.9, 0.05),
+            xytext=(160, 0.4), arrowprops=dict(arrowstyle="->", color="gray"),
+            fontsize=9, color="gray")
+plt.tight_layout()
+plt.show()
+```
+
+## Summary
+
+- Classical (Aristotelian) logic assigns every proposition a value of true or false; there is no middle ground.
+- The Sorites Paradox shows that many natural language predicates — heap, tall, bald, red — do not have sharp boundaries; classical logic cannot represent them faithfully.
+- Multivalued logics (Łukasiewicz, Post) introduced discrete intermediate truth values; fuzzy logic extended this to a continuous $[0,1]$ interval.
+- The limitation is not with logic itself but with the assumption that categories have crisp boundaries.
+
+## Further Reading
+
+@kosko1993fuzzy is an opinionated but readable introduction to fuzzy thinking, written for a broad audience. For the philosophical background on vagueness, Timothy Williamson's *Vagueness* is the rigorous treatment, though demanding. The original Zadeh paper is concise and worth reading: @zadeh1965fuzzy.

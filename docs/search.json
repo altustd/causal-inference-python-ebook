@@ -1,0 +1,1273 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Uncertain Minds",
+    "section": "",
+    "text": "0.1 The Oracle Problem\nIn the summer of 1854, a physician named John Snow did something that was, at the time, considered deeply strange. There was a cholera epidemic tearing through the Soho district of London, and Snow did not reach for the prevailing theory — that the disease traveled through foul air, the so-called miasma. Instead, he walked the neighborhood with a notebook, marking deaths on a map. The cluster that emerged pointed, with uncomfortable precision, at a water pump on Broad Street.\nSnow had not discovered a statistical correlation. He had identified a cause.\nThe distinction matters enormously. Thousands of people lived near the pump and did not die. Dozens died who lived farther away but happened to work near it. The pattern alone did not tell the story. Snow had to reason about mechanisms — about how cholera spread, about which water was shared and which was not, about what would happen if someone intervened and removed the pump handle.\nThat last word, intervene, turns out to be the key to everything in this book.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction: The Problem of Learning</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#three-ways-to-reason-under-uncertainty",
+    "href": "index.html#three-ways-to-reason-under-uncertainty",
+    "title": "Uncertain Minds",
+    "section": "0.2 Three Ways to Reason Under Uncertainty",
+    "text": "0.2 Three Ways to Reason Under Uncertainty\nModern quantitative reasoning comes in roughly three flavors, and they answer subtly different questions.\nThe first is frequentist statistics. A frequentist asks: given that this hypothesis is true, how often would I see data like this? It is a powerful framework, responsible for much of the scientific infrastructure of the twentieth century. But it has a notable quirk: it cannot directly tell you how probable a hypothesis is. It can only tell you how improbable the data would be if the hypothesis were false.\nThe second is Bayesian reasoning. A Bayesian asks: given this data, how should I update my beliefs? This is closer to how humans actually think. You begin with some prior expectation — cholera probably travels in water, because of what you know about other waterborne pathogens — and you revise it as evidence accumulates. The mathematics is straightforward, but the philosophical implications have been argued about for two centuries and show no signs of settling down.\nThe third is causal inference. A causal reasoner asks: what would happen if I changed something? Not what pattern do I see, but what would the world look like under a different intervention? This framework, formalized largely in the last forty years, is arguably the most powerful of the three — and the least widely understood.\nThis book covers all three, and more. But the thread connecting them is a single idea: how do you reason well when you don’t know everything?",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction: The Problem of Learning</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#a-map-of-the-book",
+    "href": "index.html#a-map-of-the-book",
+    "title": "Uncertain Minds",
+    "section": "0.3 A Map of the Book",
+    "text": "0.3 A Map of the Book\nPart I builds the foundation. Probability is not just arithmetic — it is a way of encoding belief, and Bayesian inference is the machinery that keeps those beliefs honest as evidence arrives. These two chapters are the bedrock on which everything else rests.\nPart II takes up causality directly. Why does correlation mislead us so reliably? What is a cause, precisely, and how can you identify one without running a controlled experiment? The tools here — directed graphs, the do-calculus, counterfactual reasoning — were developed by researchers who were frustrated that statistics could describe the world but not explain it.\nPart III explores what happens when the world refuses to be crisp. Classical logic deals in true and false. Fuzzy logic deals in somewhat true and more or less false, which turns out to be a much better description of how categories actually work — in both language and in the brain.\nPart IV surveys the landscape of learning algorithms. Starting from linear regression and working through neural networks, deep learning, and causal machine learning, this section asks a practical question: what are these systems actually doing, and what are the limits of what they can learn?\nPart V turns the lens on human cognition. The Bayesian brain hypothesis. The way people reason about causes and interventions. The fuzzy, prototype-based way that concepts seem to be stored. And finally, the uncomfortable question: what can machines learn that humans cannot, and vice versa?\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\n\n# Prior: we believe the coin is fair (Beta(1,1) = uniform)\n# We flip 10 times and see 7 heads. How should our belief update?\n\nfrom scipy.stats import beta\n\ntheta = np.linspace(0, 1, 300)\nprior = beta.pdf(theta, 1, 1)           # flat prior\nposterior_5h = beta.pdf(theta, 6, 2)    # 5 heads, 1 tails (Beta(1+5, 1+1))\nposterior_7h = beta.pdf(theta, 8, 3)    # 7 heads, 3 tails (Beta(1+7, 1+3))\n\nfig, ax = plt.subplots(figsize=(8, 4))\nax.plot(theta, prior, label=\"Prior (no data)\", linestyle=\"--\", color=\"gray\")\nax.plot(theta, posterior_5h, label=\"After 5 heads in 6 flips\", color=\"#4e79a7\")\nax.plot(theta, posterior_7h, label=\"After 7 heads in 10 flips\", color=\"#f28e2b\")\nax.set_xlabel(\"θ (probability of heads)\")\nax.set_ylabel(\"Probability density\")\nax.set_title(\"Bayesian belief update — coin bias\")\nax.legend()\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 1: A coin flip and a belief update — the simplest possible Bayesian story.\n\n\n\n\n\nThe figure above shows the simplest possible Bayesian story: we begin with no opinion about whether a coin is fair, watch it land heads seven times in ten flips, and update our beliefs accordingly. The posterior distribution — our revised opinion after seeing data — has shifted toward higher values of θ. It has not moved to certainty that the coin is biased, because ten flips is not a lot of evidence. It has moved proportionally to the evidence, which is exactly what we would hope rational reasoning to do.\nThat proportionality is what this book is about.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction: The Problem of Learning</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#summary",
+    "href": "index.html#summary",
+    "title": "Uncertain Minds",
+    "section": "0.4 Summary",
+    "text": "0.4 Summary\n\nLearning, in the broadest sense, is the process of updating beliefs in response to evidence.\nFrequentist statistics, Bayesian reasoning, and causal inference are three complementary frameworks, each suited to different questions.\nThe key question that separates causal reasoning from statistical reasoning is: what would happen if we intervened?\nThe five parts of this book follow a connected arc from probability and belief, through causality and fuzzy logic, through learning algorithms, to the architecture of human cognition.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction: The Problem of Learning</span>"
+    ]
+  },
+  {
+    "objectID": "index.html#further-reading",
+    "href": "index.html#further-reading",
+    "title": "Uncertain Minds",
+    "section": "0.5 Further Reading",
+    "text": "0.5 Further Reading\nPearl and Mackenzie (2018) provides an accessible entry into causal reasoning, written for a general audience — an excellent companion to Part II of this book. Jaynes (2003) is the foundational text on probability as logic; dense, but enormously rewarding. For the history of statistical thinking, Salsburg’s The Lady Tasting Tea is a pleasure.\n\n\n\n\n\n\nJaynes, Edwin T. 2003. Probability Theory: The Logic of Science. Cambridge University Press.\n\n\nPearl, Judea, and Dana Mackenzie. 2018. The Book of Why: The New Science of Cause and Effect. Basic Books.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction: The Problem of Learning</span>"
+    ]
+  },
+  {
+    "objectID": "preface.html",
+    "href": "preface.html",
+    "title": "Preface",
+    "section": "",
+    "text": "Why This Book\nThere is a peculiar situation at the center of modern science and technology. We have built machines that can recognize faces in a crowd, translate between languages that took humans decades to learn, and beat the world’s best players at games of almost incomprehensible complexity. We call these machines intelligent. And yet, presented with a simple question — did this drug cause the patient to recover? — they go silent. The very thing a child grasps instinctively, the idea that one thing makes another thing happen, remains surprisingly difficult to capture in code.\nThis book is about that gap, and what it reveals about the nature of learning itself.\nThe journey begins with probability — not as a bookkeeping device for gamblers, but as a language for expressing degrees of belief. It moves through causal inference, the young and somewhat revolutionary discipline that gave us mathematical tools for reasoning about cause and effect. It passes through the strange territory of fuzzy logic, where heaps become heaps gradually, not all at once. It surveys the landscape of learning algorithms, from the humble linear regression to the sprawling architectures of deep learning. And it ends by turning the lens inward: how does the three-pound organ inside your skull do any of this?\nThe thread running through all of it is uncertainty — how to quantify it, how to reason through it, and what happens when we pretend it isn’t there.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "preface.html#who-this-book-is-for",
+    "href": "preface.html#who-this-book-is-for",
+    "title": "Preface",
+    "section": "Who This Book Is For",
+    "text": "Who This Book Is For\nThis book was written for the curious. A background in science, engineering, or mathematics will make the technical sections more comfortable, but it is not required. Where equations appear, they are explained in plain language before they are written down. Where code appears, it illustrates a concept — it does not replace the explanation.\nIf you have been told that statistics is about memorizing formulas, or that machine learning is magic, or that causality is too philosophical to be useful — this book disagrees with all of that, and it intends to show why.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "preface.html#how-to-read-it",
+    "href": "preface.html#how-to-read-it",
+    "title": "Preface",
+    "section": "How to Read It",
+    "text": "How to Read It\nThe five parts build on each other, but not rigidly. Parts I and II (probability, Bayesian reasoning, and causal inference) form the conceptual backbone. Part III (fuzzy logic) can be read independently. Part IV (learning algorithms) assumes Parts I–II. Part V (cognition) assumes everything before it, but rewards the reader who has followed the full arc.\nEach chapter opens with learning objectives — not to be examined on, but to orient you before you dive in. Each chapter closes with a summary and suggestions for further reading, for those who want to go deeper than this book goes.\nThe code examples use Python and run inside the project’s pixi environment. Instructions for setting this up are in Appendix B.",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "preface.html#a-note-on-style",
+    "href": "preface.html#a-note-on-style",
+    "title": "Preface",
+    "section": "A Note on Style",
+    "text": "A Note on Style\nTextbooks often present a subject as if it arrived fully formed, clean and inevitable, handed down from some mathematical heaven. The reality is messier and more interesting. The ideas in this book were argued over, discarded, rediscovered, and fought about — sometimes for decades. Where that history is worth telling, it is told.\nThe goal is not to simplify. It is to be clear.\n\nTroy Altus May 2026",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "02-probability-as-belief.html",
+    "href": "02-probability-as-belief.html",
+    "title": "2  Probability as Degree of Belief",
+    "section": "",
+    "text": "2.1 Two Interpretations of a Simple Number\nWhat does it mean to say there is a 30% chance of rain tomorrow?\nThe frequentist answers: it means that in a large number of days with atmospheric conditions like today’s, roughly 30% of them were followed by rain. Probability is a property of a class of repeated events. You cannot meaningfully assign a probability to a unique, non-repeatable event — like the outcome of this particular election, or whether a specific patient will survive surgery.\nThe Bayesian answers differently: a 30% chance of rain is a statement about your state of knowledge. It reflects how confident you are, given everything you know about the current conditions. Probability is not a property of the world; it is a property of the relationship between the world and an observer with incomplete information.\nBoth interpretations produce the same arithmetic. The difference is philosophical — but philosophy, in this case, has practical consequences that will become apparent when we get to Chapter 3.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Probability as Degree of Belief</span>"
+    ]
+  },
+  {
+    "objectID": "02-probability-as-belief.html#the-axioms-and-what-they-buy-you",
+    "href": "02-probability-as-belief.html#the-axioms-and-what-they-buy-you",
+    "title": "2  Probability as Degree of Belief",
+    "section": "2.2 The Axioms and What They Buy You",
+    "text": "2.2 The Axioms and What They Buy You\nWhether you are a frequentist or a Bayesian, probability obeys three axioms, stated compactly by Andrey Kolmogorov in 1933:\n\n\\(P(A) \\geq 0\\) for any event \\(A\\) — probabilities are non-negative.\n\\(P(\\Omega) = 1\\) — something in the sample space always happens.\n\\(P(A \\cup B) = P(A) + P(B)\\) if \\(A\\) and \\(B\\) are mutually exclusive — probabilities of disjoint events add.\n\nThese look innocuous. But they have teeth. They imply, for instance, that \\(P(A) + P(\\neg A) = 1\\) — your probability that something happens and your probability that it doesn’t must sum to one. This rules out a certain kind of incoherence: you cannot simultaneously believe there is a 70% chance of rain and a 50% chance of no rain.\nA coherent set of beliefs is one that could not be exploited by a clever betting opponent. The Dutch book argument — a classic result in probability theory — shows that anyone whose beliefs violate the axioms can be offered a set of bets that guarantees them a loss regardless of what happens.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Probability as Degree of Belief</span>"
+    ]
+  },
+  {
+    "objectID": "02-probability-as-belief.html#conditional-probability",
+    "href": "02-probability-as-belief.html#conditional-probability",
+    "title": "2  Probability as Degree of Belief",
+    "section": "2.3 Conditional Probability",
+    "text": "2.3 Conditional Probability\nMost interesting questions involve conditional probability: given that we know something, how does that change what we expect?\n\\[P(A \\mid B) = \\frac{P(A \\cap B)}{P(B)} \\tag{2.1}\\]\nRead this as: the probability of \\(A\\) given \\(B\\) is the proportion of \\(B\\)-cases in which \\(A\\) also occurs. The intuition is simple — conditioning on \\(B\\) restricts our universe to the subset of events where \\(B\\) is true, then asks how often \\(A\\) appears in that subset.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Probability as Degree of Belief</span>"
+    ]
+  },
+  {
+    "objectID": "02-probability-as-belief.html#bayes-theorem-the-arithmetic-of-updating",
+    "href": "02-probability-as-belief.html#bayes-theorem-the-arithmetic-of-updating",
+    "title": "2  Probability as Degree of Belief",
+    "section": "2.4 Bayes’ Theorem: The Arithmetic of Updating",
+    "text": "2.4 Bayes’ Theorem: The Arithmetic of Updating\nBayes’ theorem is just a rearrangement of the definition of conditional probability. It is also one of the most useful results in all of science.\n\\[P(H \\mid D) = \\frac{P(D \\mid H) \\cdot P(H)}{P(D)} \\tag{2.2}\\]\nWhere \\(H\\) is a hypothesis and \\(D\\) is data. In words:\n\n\\(P(H)\\) is the prior — your belief in \\(H\\) before seeing \\(D\\).\n\\(P(D \\mid H)\\) is the likelihood — how probable the data would be if \\(H\\) were true.\n\\(P(H \\mid D)\\) is the posterior — your updated belief after seeing \\(D\\).\n\\(P(D)\\) is the marginal likelihood — a normalizing constant ensuring the posterior sums to one.\n\nThe theorem tells you, precisely, how much a piece of evidence should change your mind.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom scipy.stats import beta\n\nrng = np.random.default_rng(42)\ntrue_theta = 0.7          # coin is biased toward heads\nn_flips = 30\nflips = rng.binomial(1, true_theta, n_flips)\n\ntheta = np.linspace(0, 1, 500)\nalpha, b_param = 1, 1     # start with flat (uniform) prior\n\nfig, axes = plt.subplots(1, 3, figsize=(12, 4), sharey=False)\ncheckpoints = [5, 15, 30]\n\nfor ax, n in zip(axes, checkpoints):\n    heads = flips[:n].sum()\n    tails = n - heads\n    posterior = beta.pdf(theta, alpha + heads, b_param + tails)\n    ax.plot(theta, posterior, color=\"#4e79a7\", linewidth=2)\n    ax.axvline(true_theta, color=\"red\", linestyle=\"--\", linewidth=1, label=f\"True θ={true_theta}\")\n    ax.set_title(f\"After {n} flips ({heads}H / {tails}T)\")\n    ax.set_xlabel(\"θ\")\n    ax.set_ylabel(\"Density\")\n    ax.legend(fontsize=8)\n\nplt.suptitle(\"Bayesian updating — the posterior tightens around the truth\", y=1.02)\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 2.1: Bayesian updating across multiple coin flips. Each observation nudges the posterior toward the true bias.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Probability as Degree of Belief</span>"
+    ]
+  },
+  {
+    "objectID": "02-probability-as-belief.html#summary",
+    "href": "02-probability-as-belief.html#summary",
+    "title": "2  Probability as Degree of Belief",
+    "section": "2.5 Summary",
+    "text": "2.5 Summary\n\nProbability has two main interpretations: frequentist (long-run frequency) and Bayesian (degree of belief). They share the same axioms but answer different questions.\nConditional probability \\(P(A \\mid B)\\) restricts the sample space to cases where \\(B\\) is true.\nBayes’ theorem is the rule for updating beliefs in response to evidence: prior × likelihood ∝ posterior.\nIncoherent beliefs — those that violate the probability axioms — can be exploited by a clever opponent.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Probability as Degree of Belief</span>"
+    ]
+  },
+  {
+    "objectID": "02-probability-as-belief.html#further-reading",
+    "href": "02-probability-as-belief.html#further-reading",
+    "title": "2  Probability as Degree of Belief",
+    "section": "2.6 Further Reading",
+    "text": "2.6 Further Reading\nJaynes (2003) is the definitive case for probability as logic rather than frequency. For a shorter and more accessible treatment, Nate Silver’s The Signal and the Noise covers Bayesian thinking in the real world without heavy mathematics.\n\n\n\n\n\n\nJaynes, Edwin T. 2003. Probability Theory: The Logic of Science. Cambridge University Press.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>2</span>  <span class='chapter-title'>Probability as Degree of Belief</span>"
+    ]
+  },
+  {
+    "objectID": "03-bayesian-inference.html",
+    "href": "03-bayesian-inference.html",
+    "title": "3  Bayesian Inference in Practice",
+    "section": "",
+    "text": "3.1 Prior, Likelihood, Posterior\nIn Chapter 2 we saw Bayes’ theorem as an equation. In this chapter, we use it as a workflow.\nEvery Bayesian analysis has three ingredients. The prior encodes what you believe before you see data — perhaps weakly (a flat distribution that spreads probability evenly) or strongly (a narrow distribution centered on an expert estimate). The likelihood encodes how the data-generating process works: if the true parameter is \\(\\theta\\), how probable is the data we actually observed? The posterior is the product of these two, normalized to integrate to one.\nThe posterior is not a point estimate. It is a full probability distribution — a complete picture of your uncertainty about the parameter after seeing the data. This is more information than a single number with error bars, and in many problems it is exactly what you need.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Bayesian Inference in Practice</span>"
+    ]
+  },
+  {
+    "objectID": "03-bayesian-inference.html#conjugate-priors",
+    "href": "03-bayesian-inference.html#conjugate-priors",
+    "title": "3  Bayesian Inference in Practice",
+    "section": "3.2 Conjugate Priors",
+    "text": "3.2 Conjugate Priors\nFor certain likelihood functions, there exists a prior family that yields a posterior in the same family. These are called conjugate priors, and they are deeply convenient: the update rule has a closed form.\nThe Beta-Binomial pair is the classic example. If your prior on a coin’s bias \\(\\theta\\) is \\(\\text{Beta}(\\alpha, \\beta)\\), and you observe \\(h\\) heads and \\(t\\) tails, your posterior is \\(\\text{Beta}(\\alpha + h, \\beta + t)\\). Each head increments \\(\\alpha\\) by one; each tail increments \\(\\beta\\) by one. The parameters accumulate evidence like a ledger.\nOther useful conjugate pairs: - Normal likelihood with Normal prior → Normal posterior (known variance) - Poisson likelihood with Gamma prior → Gamma posterior - Multinomial likelihood with Dirichlet prior → Dirichlet posterior\nBeyond these, closed-form posteriors rarely exist. For real-world models — hierarchical structures, non-linear relationships, mixed observations — we need a different approach.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Bayesian Inference in Practice</span>"
+    ]
+  },
+  {
+    "objectID": "03-bayesian-inference.html#markov-chain-monte-carlo",
+    "href": "03-bayesian-inference.html#markov-chain-monte-carlo",
+    "title": "3  Bayesian Inference in Practice",
+    "section": "3.3 Markov Chain Monte Carlo",
+    "text": "3.3 Markov Chain Monte Carlo\nWhen the posterior has no closed form, we approximate it by drawing samples. If we can generate a large number of samples \\(\\{\\theta_1, \\theta_2, \\ldots, \\theta_N\\}\\) that are distributed according to the posterior, we can estimate any quantity of interest — mean, median, credible interval — from those samples directly.\nThe challenge: we cannot sample from the posterior directly (we don’t know its normalizing constant). Markov Chain Monte Carlo (MCMC) is an elegant workaround. It constructs a Markov chain — a random walk through parameter space — whose stationary distribution is the posterior. If you run the chain long enough, the samples it produces are, effectively, draws from the posterior.\nThe intuition is a hiker in a mountainous landscape: the hiker moves randomly but tends to stay near high ground. Given enough time, the proportion of time spent at any location reflects the height of the terrain there. The terrain is the posterior probability density.\nModern MCMC algorithms (No-U-Turn Sampler, Hamiltonian Monte Carlo) are far more efficient than the original random walks, which is why Bayesian computation that was impractical in 1990 is routine today.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Bayesian Inference in Practice</span>"
+    ]
+  },
+  {
+    "objectID": "03-bayesian-inference.html#pymc-hands-on",
+    "href": "03-bayesian-inference.html#pymc-hands-on",
+    "title": "3  Bayesian Inference in Practice",
+    "section": "3.4 PyMC: Hands-On",
+    "text": "3.4 PyMC: Hands-On\nPyMC is a Python library for probabilistic programming. You describe your model — the prior and the likelihood — and PyMC handles the MCMC automatically.\n\n\nCode\nimport numpy as np\nimport pymc as pm\nimport matplotlib.pyplot as plt\n\nrng = np.random.default_rng(7)\ntrue_p = 0.65\nobserved = rng.binomial(1, true_p, 50)   # 50 coin flips\n\nwith pm.Model() as coin_model:\n    # Prior: weakly informative — we expect a fair-ish coin\n    p = pm.Beta(\"p\", alpha=2, beta=2)\n\n    # Likelihood: each flip is Bernoulli with bias p\n    obs = pm.Bernoulli(\"obs\", p=p, observed=observed)\n\n    # Sample from the posterior\n    trace = pm.sample(1000, tune=500, progressbar=False, random_seed=42)\n\nposterior_samples = trace.posterior[\"p\"].values.flatten()\n\nfig, ax = plt.subplots(figsize=(8, 4))\nax.hist(posterior_samples, bins=40, density=True, color=\"#4e79a7\", alpha=0.75, label=\"Posterior samples\")\nax.axvline(true_p, color=\"red\", linestyle=\"--\", linewidth=1.5, label=f\"True p = {true_p}\")\nax.axvline(posterior_samples.mean(), color=\"#f28e2b\", linestyle=\"-\", linewidth=1.5,\n           label=f\"Posterior mean = {posterior_samples.mean():.3f}\")\nax.set_xlabel(\"p (coin bias)\")\nax.set_ylabel(\"Density\")\nax.set_title(\"Posterior distribution of coin bias (50 flips)\")\nax.legend()\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 3.1: Posterior distribution of a coin’s bias, estimated by MCMC. The true value (0.65) falls well within the 94% credible interval.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Bayesian Inference in Practice</span>"
+    ]
+  },
+  {
+    "objectID": "03-bayesian-inference.html#summary",
+    "href": "03-bayesian-inference.html#summary",
+    "title": "3  Bayesian Inference in Practice",
+    "section": "3.5 Summary",
+    "text": "3.5 Summary\n\nBayesian inference proceeds in three steps: specify a prior, specify a likelihood, condition on observed data to get the posterior.\nConjugate priors give closed-form posteriors for specific likelihood families; the Beta-Binomial pair is the most commonly encountered.\nMCMC generates samples from the posterior when no closed form exists; modern implementations (HMC, NUTS) are efficient enough for practical use.\nPyMC provides a high-level interface for building probabilistic models; the user specifies structure, the library handles computation.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Bayesian Inference in Practice</span>"
+    ]
+  },
+  {
+    "objectID": "03-bayesian-inference.html#further-reading",
+    "href": "03-bayesian-inference.html#further-reading",
+    "title": "3  Bayesian Inference in Practice",
+    "section": "3.6 Further Reading",
+    "text": "3.6 Further Reading\nGelman et al. (2013) is the standard reference for applied Bayesian analysis. The PyMC documentation includes a rich set of worked examples. For the philosophy behind prior choice, Gelman’s blog (Statistical Modeling, Causal Inference, and Social Science) is worth bookmarking.\n\n\n\n\n\n\nGelman, Andrew, John B. Carlin, Hal S. Stern, David B. Dunson, Aki Vehtari, and Donald B. Rubin. 2013. Bayesian Data Analysis. 3rd ed. CRC Press.",
+    "crumbs": [
+      "Part I: Foundations of Reasoning Under Uncertainty",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Bayesian Inference in Practice</span>"
+    ]
+  },
+  {
+    "objectID": "04-why-correlation-lies.html",
+    "href": "04-why-correlation-lies.html",
+    "title": "4  Why Correlation Lies",
+    "section": "",
+    "text": "4.1 A Tale Told Backwards\nIn 1973, UC Berkeley was sued for gender bias in graduate admissions. The data seemed damning: of 8,442 men who applied, 44% were admitted; of 4,321 women, only 35% were admitted. When researchers looked more carefully, however, something unexpected emerged. When they broke the data down by department, women were admitted at a higher rate than men in most departments. The aggregated statistic had reversed the truth.\nThis is Simpson’s Paradox: a trend that appears in several groups of data can disappear — or reverse — when those groups are combined. The reason, in Berkeley’s case, was a lurking variable: women disproportionately applied to highly competitive departments with low acceptance rates for everyone. The overall admission rate reflected departmental selectivity, not gender discrimination.\nSimpson’s Paradox is not a quirk. It is a warning label on every dataset you will ever analyze.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Why Correlation Lies</span>"
+    ]
+  },
+  {
+    "objectID": "04-why-correlation-lies.html#confounders-and-colliders",
+    "href": "04-why-correlation-lies.html#confounders-and-colliders",
+    "title": "4  Why Correlation Lies",
+    "section": "4.2 Confounders and Colliders",
+    "text": "4.2 Confounders and Colliders\nA confounder is a variable that influences both the cause and the effect we are studying, creating a spurious association between them. If we observe that shoe size correlates with reading ability in children, the confounder is age: older children have larger feet and read better. Shoe size does not cause literacy.\nA collider is more subtle. It is a variable that is caused by two other variables, and conditioning on it can create a spurious association between its causes. If both talent and luck determine whether someone becomes famous, then among famous people, talent and luck are negatively correlated — you needed one if you lacked the other. Conditioning on fame (the collider) introduces a relationship that does not exist in the general population.\nUnderstanding the difference between confounders and colliders is the difference between adjusting for the right variables and adjusting for the wrong ones. Statistical practice has long recommended “controlling for everything.” Causal theory shows that this advice can actively mislead you.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Why Correlation Lies</span>"
+    ]
+  },
+  {
+    "objectID": "04-why-correlation-lies.html#the-structural-picture",
+    "href": "04-why-correlation-lies.html#the-structural-picture",
+    "title": "4  Why Correlation Lies",
+    "section": "4.3 The Structural Picture",
+    "text": "4.3 The Structural Picture\nConsider a simple scenario: ice cream sales and drowning deaths are correlated. The confounder is hot weather, which causes both. If you naively regress drowning deaths on ice cream sales, you will find a positive relationship. Intervening on ice cream sales — shutting every ice cream truck in the country — would not reduce drowning deaths.\nThe association exists. The causal relationship does not. No amount of statistical sophistication can recover the distinction without additional structural assumptions — assumptions about how the data was generated.\nThis is the central insight that motivates Part II of this book.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nrng = np.random.default_rng(0)\n\n# Three groups with different (x, y) offsets — each has positive slope\ngroups = [(1, 5), (4, 3), (7, 1)]   # (x_offset, y_offset)\ncolors = [\"#4e79a7\", \"#f28e2b\", \"#59a14f\"]\nall_x, all_y = [], []\n\nfig, ax = plt.subplots(figsize=(8, 5))\n\nfor (xo, yo), col in zip(groups, colors):\n    x = rng.uniform(0, 2, 30) + xo\n    y = 0.5 * x + rng.normal(0, 0.3, 30) + yo - 0.5 * xo\n    ax.scatter(x, y, color=col, alpha=0.6, s=30)\n    m = np.polyfit(x, y, 1)\n    xs = np.linspace(x.min(), x.max(), 100)\n    ax.plot(xs, np.polyval(m, xs), color=col, linewidth=2)\n    all_x.extend(x); all_y.extend(y)\n\n# Overall (spurious) trend\nall_x, all_y = np.array(all_x), np.array(all_y)\nm_all = np.polyfit(all_x, all_y, 1)\nxs_all = np.linspace(all_x.min(), all_x.max(), 300)\nax.plot(xs_all, np.polyval(m_all, xs_all), color=\"gray\", linewidth=2.5,\n        linestyle=\"--\", label=\"Overall trend (misleading)\")\nax.set_xlabel(\"X\"); ax.set_ylabel(\"Y\")\nax.set_title(\"Simpson's Paradox\")\nax.legend()\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 4.1: Simpson’s Paradox: the overall trend (gray) suggests a negative relationship. Within each group (colored), the trend is positive.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Why Correlation Lies</span>"
+    ]
+  },
+  {
+    "objectID": "04-why-correlation-lies.html#summary",
+    "href": "04-why-correlation-lies.html#summary",
+    "title": "4  Why Correlation Lies",
+    "section": "4.4 Summary",
+    "text": "4.4 Summary\n\nSimpson’s Paradox shows that aggregating data across groups can reverse the direction of an association.\nConfounders are variables that cause both the treatment and the outcome, creating spurious associations.\nColliders are variables caused by two others; conditioning on a collider introduces spurious associations between its causes.\nStatistical correlation, however carefully measured, cannot distinguish causal relationships from artifacts of the data-generating process.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Why Correlation Lies</span>"
+    ]
+  },
+  {
+    "objectID": "04-why-correlation-lies.html#further-reading",
+    "href": "04-why-correlation-lies.html#further-reading",
+    "title": "4  Why Correlation Lies",
+    "section": "4.5 Further Reading",
+    "text": "4.5 Further Reading\nPearl and Mackenzie (2018) opens with an extended discussion of Simpson’s Paradox that is more accessible than any academic treatment. Judea Pearl’s original technical work on confounders and colliders is in Pearl (2009), which is thorough but requires patience.\n\n\n\n\n\n\nPearl, Judea. 2009. Causality: Models, Reasoning, and Inference. 2nd ed. Cambridge University Press.\n\n\nPearl, Judea, and Dana Mackenzie. 2018. The Book of Why: The New Science of Cause and Effect. Basic Books.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Why Correlation Lies</span>"
+    ]
+  },
+  {
+    "objectID": "05-structural-causal-models.html",
+    "href": "05-structural-causal-models.html",
+    "title": "5  Structural Causal Models and DAGs",
+    "section": "",
+    "text": "5.1 Drawing the Story\nA Directed Acyclic Graph is a picture with a purpose. Each node represents a variable. Each directed edge represents a direct causal relationship: an arrow from \\(X\\) to \\(Y\\) means \\(X\\) is one of the direct causes of \\(Y\\). “Acyclic” means the graph has no loops — you cannot follow arrows from any node and return to where you started. This rules out feedback cycles, which require a different formalism entirely.\nThe graph encodes qualitative causal structure: which things affect which other things, independent of the precise functional form or the strength of the effect. This separation of structure from magnitude is one of the most powerful features of the causal framework. It lets you reason about what you can and cannot learn from data before you even look at the numbers.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Structural Causal Models and DAGs</span>"
+    ]
+  },
+  {
+    "objectID": "05-structural-causal-models.html#d-separation-and-conditional-independence",
+    "href": "05-structural-causal-models.html#d-separation-and-conditional-independence",
+    "title": "5  Structural Causal Models and DAGs",
+    "section": "5.2 d-Separation and Conditional Independence",
+    "text": "5.2 d-Separation and Conditional Independence\nNot every pair of variables in a DAG is associated. Whether two nodes \\(X\\) and \\(Y\\) are statistically dependent — or independent, or conditionally independent given some third variable \\(Z\\) — is determined by the paths connecting them and the role of \\(Z\\) in those paths.\nJudea Pearl’s d-separation criterion provides the exact rules. Three patterns matter:\nChain: \\(X \\to Z \\to Y\\) — \\(Z\\) mediates the relationship between \\(X\\) and \\(Y\\). Conditioning on \\(Z\\) blocks the path: \\(X \\perp Y \\mid Z\\).\nFork: \\(X \\leftarrow Z \\to Y\\) — \\(Z\\) is a common cause. The association between \\(X\\) and \\(Y\\) is due to \\(Z\\). Conditioning on \\(Z\\) blocks the path.\nCollider: \\(X \\to Z \\leftarrow Y\\) — \\(Z\\) is caused by both \\(X\\) and \\(Y\\). Without conditioning, the path is blocked: \\(X \\perp Y\\). But if you condition on \\(Z\\), the path opens: \\(X \\not\\perp Y \\mid Z\\).\nThis last case is the collider phenomenon from Chapter 4, now stated precisely.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Structural Causal Models and DAGs</span>"
+    ]
+  },
+  {
+    "objectID": "05-structural-causal-models.html#the-ladder-of-causation",
+    "href": "05-structural-causal-models.html#the-ladder-of-causation",
+    "title": "5  Structural Causal Models and DAGs",
+    "section": "5.3 The Ladder of Causation",
+    "text": "5.3 The Ladder of Causation\nPearl describes three levels of causal reasoning, which he calls the Ladder of Causation:\nRung 1 — Association. What do I see? Statistical patterns, correlations, conditional expectations. This is the domain of observational data and classical machine learning. A camera captures this rung.\nRung 2 — Intervention. What happens if I do something? The question is no longer about observations but about actions — about changing the world and observing the consequences. A thermostat operates on this rung. This is the domain of randomized experiments and the do-calculus (Chapter 6).\nRung 3 — Counterfactuals. What would have happened if things had been different? This rung asks about worlds that did not occur. It is the domain of law (was this the proximate cause of the accident?), medicine (would this patient have survived without the treatment?), and moral philosophy. It requires the full machinery of structural causal models.\nMost statistical methods operate exclusively on Rung 1. They are, in this sense, blind to the questions on Rungs 2 and 3 — not because they lack data, but because the questions themselves live at a higher level of the ladder.\n\n\nCode\nimport networkx as nx\nimport matplotlib.pyplot as plt\nimport matplotlib.patches as mpatches\n\nG = nx.DiGraph()\nnodes = [\"Background\", \"Education\", \"Income\", \"Job Connections\"]\nedges = [\n    (\"Background\", \"Education\"),\n    (\"Background\", \"Income\"),\n    (\"Education\", \"Income\"),\n    (\"Education\", \"Job Connections\"),\n    (\"Job Connections\", \"Income\"),\n]\nG.add_nodes_from(nodes)\nG.add_edges_from(edges)\n\npos = {\n    \"Background\":      (0, 1),\n    \"Education\":       (1, 2),\n    \"Job Connections\": (2, 2),\n    \"Income\":          (2, 0),\n}\n\nfig, ax = plt.subplots(figsize=(8, 5))\nnx.draw_networkx_nodes(G, pos, ax=ax, node_size=2500, node_color=\"#d0e4f7\", edgecolors=\"#4e79a7\", linewidths=2)\nnx.draw_networkx_labels(G, pos, ax=ax, font_size=10)\nnx.draw_networkx_edges(G, pos, ax=ax, arrows=True, arrowsize=25,\n                       edge_color=\"#555\", width=2,\n                       connectionstyle=\"arc3,rad=0.05\")\nax.set_title(\"Causal DAG: determinants of income\")\nax.axis(\"off\")\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 5.1: A simple causal DAG: education and background both influence income; background also influences education.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Structural Causal Models and DAGs</span>"
+    ]
+  },
+  {
+    "objectID": "05-structural-causal-models.html#summary",
+    "href": "05-structural-causal-models.html#summary",
+    "title": "5  Structural Causal Models and DAGs",
+    "section": "5.4 Summary",
+    "text": "5.4 Summary\n\nA DAG is a qualitative description of causal structure: nodes are variables, directed edges are direct causal relationships.\nd-separation determines which pairs of variables are conditionally independent, given a set of observed variables.\nThe three fundamental path patterns — chain, fork, collider — each have different independence implications.\nThe Ladder of Causation distinguishes association (what is), intervention (what would be if I acted), and counterfactuals (what would have been if things had been different).",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Structural Causal Models and DAGs</span>"
+    ]
+  },
+  {
+    "objectID": "05-structural-causal-models.html#further-reading",
+    "href": "05-structural-causal-models.html#further-reading",
+    "title": "5  Structural Causal Models and DAGs",
+    "section": "5.5 Further Reading",
+    "text": "5.5 Further Reading\nPearl (2009) is the definitive technical reference for DAGs and d-separation. For a shorter introduction, Chapter 3 of Pearl and Mackenzie (2018) covers the same ground for a general audience. The pgmpy library (used in later chapters) provides Python tools for constructing and querying Bayesian networks.\n\n\n\n\n\n\nPearl, Judea. 2009. Causality: Models, Reasoning, and Inference. 2nd ed. Cambridge University Press.\n\n\nPearl, Judea, and Dana Mackenzie. 2018. The Book of Why: The New Science of Cause and Effect. Basic Books.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>5</span>  <span class='chapter-title'>Structural Causal Models and DAGs</span>"
+    ]
+  },
+  {
+    "objectID": "06-interventions-do-calculus.html",
+    "href": "06-interventions-do-calculus.html",
+    "title": "6  Interventions and the Do-Calculus",
+    "section": "",
+    "text": "6.1 Seeing vs. Doing\nThere is a profound difference between learning that someone takes aspirin frequently and making someone take aspirin. The first is an observation. The second is an intervention.\nWhen we observe that heavy aspirin users have lower rates of heart disease, we cannot immediately conclude that aspirin prevents heart disease. Perhaps people who take aspirin regularly are also more health-conscious in other ways — they exercise, avoid smoking, see their doctors more often. The observation conflates the effect of aspirin with the effect of health-consciousness.\nWhen we intervene — assigning aspirin randomly to participants in a clinical trial — we sever the link between aspirin use and whatever background factors made someone likely to take aspirin in the first place. We have, in effect, cut the incoming arrows to the aspirin node in the causal graph.\nPearl’s notation captures this precisely. The expression \\(P(Y \\mid X = x)\\) asks: among people we observe to have \\(X = x\\), what is the distribution of \\(Y\\)? The expression \\(P(Y \\mid do(X = x))\\) asks: if we set \\(X = x\\) by intervention, what would the distribution of \\(Y\\) be?\nThese two quantities can differ dramatically.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Interventions and the Do-Calculus</span>"
+    ]
+  },
+  {
+    "objectID": "06-interventions-do-calculus.html#interventional-distributions-and-the-mutilated-graph",
+    "href": "06-interventions-do-calculus.html#interventional-distributions-and-the-mutilated-graph",
+    "title": "6  Interventions and the Do-Calculus",
+    "section": "6.2 Interventional Distributions and the Mutilated Graph",
+    "text": "6.2 Interventional Distributions and the Mutilated Graph\nMathematically, computing \\(P(Y \\mid do(X = x))\\) corresponds to:\n\nRemove all incoming arrows to \\(X\\) from the DAG (the “mutilated graph”).\nFix \\(X = x\\).\nCompute the probability of \\(Y\\) in this modified graph.\n\nThe mutilated graph represents a world in which the variable \\(X\\) is under external control — no longer influenced by its natural causes.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Interventions and the Do-Calculus</span>"
+    ]
+  },
+  {
+    "objectID": "06-interventions-do-calculus.html#the-backdoor-criterion",
+    "href": "06-interventions-do-calculus.html#the-backdoor-criterion",
+    "title": "6  Interventions and the Do-Calculus",
+    "section": "6.3 The Backdoor Criterion",
+    "text": "6.3 The Backdoor Criterion\nFor most practical applications, we want to estimate causal effects from observational data — without a randomized experiment. The backdoor criterion tells us when, and how, this is possible.\nA set of variables \\(Z\\) satisfies the backdoor criterion relative to an ordered pair \\((X, Y)\\) if:\n\nNo node in \\(Z\\) is a descendant of \\(X\\).\n\\(Z\\) blocks every “backdoor path” from \\(X\\) to \\(Y\\) — every path that begins with an arrow into \\(X\\).\n\nIf such a \\(Z\\) exists, the causal effect of \\(X\\) on \\(Y\\) can be estimated by adjusting for \\(Z\\):\n\\[P(Y \\mid do(X)) = \\sum_z P(Y \\mid X, Z = z) \\cdot P(Z = z) \\tag{6.1}\\]\nThis is the adjustment formula. In a regression context, it corresponds to including the confounders \\(Z\\) as covariates.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Interventions and the Do-Calculus</span>"
+    ]
+  },
+  {
+    "objectID": "06-interventions-do-calculus.html#the-front-door-criterion",
+    "href": "06-interventions-do-calculus.html#the-front-door-criterion",
+    "title": "6  Interventions and the Do-Calculus",
+    "section": "6.4 The Front-Door Criterion",
+    "text": "6.4 The Front-Door Criterion\nSometimes no valid adjustment set exists — the confounders are unobserved. The front-door criterion offers an alternative route in certain graph structures.\nIf there is a mediator \\(M\\) between \\(X\\) and \\(Y\\) such that: (1) all paths from \\(X\\) to \\(Y\\) go through \\(M\\), (2) there are no unblocked backdoor paths from \\(X\\) to \\(M\\), and (3) all backdoor paths from \\(M\\) to \\(Y\\) are blocked by \\(X\\) — then the causal effect can be estimated even without observing the confounders:\n\\[P(Y \\mid do(X)) = \\sum_m P(M = m \\mid X) \\sum_x P(Y \\mid X = x, M = m) P(X = x) \\tag{6.2}\\]\nThe front-door adjustment was Pearl’s demonstration that causal inference is sometimes possible even when all the confounders are hidden.\n\n\nCode\nimport networkx as nx\nimport matplotlib.pyplot as plt\n\nG = nx.DiGraph()\nnodes = [\"U (confounder)\", \"Treatment\", \"Outcome\"]\nedges = [\n    (\"U (confounder)\", \"Treatment\"),\n    (\"U (confounder)\", \"Outcome\"),\n    (\"Treatment\", \"Outcome\"),\n]\nG.add_nodes_from(nodes)\nG.add_edges_from(edges)\n\npos = {\"U (confounder)\": (1, 2), \"Treatment\": (0, 0), \"Outcome\": (2, 0)}\ncolors = {\"U (confounder)\": \"#ffd700\", \"Treatment\": \"#d0e4f7\", \"Outcome\": \"#d0f7d4\"}\n\nfig, ax = plt.subplots(figsize=(7, 4))\nnx.draw_networkx_nodes(G, pos, ax=ax, node_size=2800,\n                       node_color=[colors[n] for n in G.nodes()],\n                       edgecolors=\"#555\", linewidths=1.5)\nnx.draw_networkx_labels(G, pos, ax=ax, font_size=9)\nnx.draw_networkx_edges(G, pos, ax=ax, arrows=True, arrowsize=25,\n                       edge_color=\"#555\", width=2,\n                       connectionstyle=\"arc3,rad=0.05\")\nax.set_title(\"Backdoor path: Treatment ← U → Outcome (backdoor path to block)\")\nax.axis(\"off\")\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 6.1: Backdoor paths in a simple DAG. The confounder U creates a spurious path between Treatment and Outcome.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Interventions and the Do-Calculus</span>"
+    ]
+  },
+  {
+    "objectID": "06-interventions-do-calculus.html#summary",
+    "href": "06-interventions-do-calculus.html#summary",
+    "title": "6  Interventions and the Do-Calculus",
+    "section": "6.5 Summary",
+    "text": "6.5 Summary\n\nObserving \\(P(Y \\mid X)\\) and intervening \\(P(Y \\mid do(X))\\) are different quantities; they coincide only when there are no confounders.\nThe do-operator corresponds to removing incoming edges to the target node — the “mutilated graph.”\nThe backdoor criterion identifies a set of observed variables that, if adjusted for, removes confounding and yields the causal effect.\nThe front-door criterion allows causal identification even when confounders are unobserved, using a mediating variable.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Interventions and the Do-Calculus</span>"
+    ]
+  },
+  {
+    "objectID": "06-interventions-do-calculus.html#further-reading",
+    "href": "06-interventions-do-calculus.html#further-reading",
+    "title": "6  Interventions and the Do-Calculus",
+    "section": "6.6 Further Reading",
+    "text": "6.6 Further Reading\nPearl (2009) contains the full derivation of the do-calculus and its completeness. The three rules of the do-calculus are stated in Chapter 3; the backdoor and front-door criteria are in Chapter 3–4. Pearl and Mackenzie (2018) retells these results with historical narrative in Chapters 7–8.\n\n\n\n\n\n\nPearl, Judea. 2009. Causality: Models, Reasoning, and Inference. 2nd ed. Cambridge University Press.\n\n\nPearl, Judea, and Dana Mackenzie. 2018. The Book of Why: The New Science of Cause and Effect. Basic Books.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Interventions and the Do-Calculus</span>"
+    ]
+  },
+  {
+    "objectID": "07-counterfactuals.html",
+    "href": "07-counterfactuals.html",
+    "title": "7  Counterfactuals",
+    "section": "",
+    "text": "7.1 The Road Not Taken\nEvery decision is haunted by the road not taken.\nA patient receives a medication and recovers. Would she have recovered anyway, without the medication? A student attends a selective college and goes on to a successful career. Would he have succeeded regardless — was the selection effect doing the work, not the education? A city builds a new highway and traffic congestion increases. Would congestion have been even worse without the highway?\nThese are counterfactual questions. They ask about worlds that did not happen. This puts them in an unusual position scientifically: you cannot observe a counterfactual. You can never see the same patient recover from the same disease twice, once treated and once untreated.\nAnd yet counterfactual reasoning is so natural to human thought that we barely notice we are doing it. It is the basis of regret, of attribution, of moral responsibility. When a judge asks whether the defendant’s action caused the harm, she is asking a counterfactual question: would the harm have occurred anyway, absent the defendant’s action?",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Counterfactuals</span>"
+    ]
+  },
+  {
+    "objectID": "07-counterfactuals.html#potential-outcomes",
+    "href": "07-counterfactuals.html#potential-outcomes",
+    "title": "7  Counterfactuals",
+    "section": "7.2 Potential Outcomes",
+    "text": "7.2 Potential Outcomes\nDonald Rubin formalized counterfactual reasoning in statistics using the potential outcomes framework. For every unit \\(i\\) and every possible treatment value \\(t\\), there is a potential outcome \\(Y_i(t)\\): the outcome unit \\(i\\) would have if assigned to treatment \\(t\\).\nThe fundamental problem of causal inference: for any individual, you observe at most one potential outcome. The others are permanently missing — not missing by accident, but missing by the logic of time. The unit received treatment \\(T_i = 1\\), so you observe \\(Y_i(1)\\). The potential outcome \\(Y_i(0)\\) — what would have happened under control — is counterfactual.\nThe individual treatment effect for unit \\(i\\) is:\n\\[\\tau_i = Y_i(1) - Y_i(0) \\tag{7.1}\\]\nSince only one of these is observed, \\(\\tau_i\\) can never be directly measured for any individual. Causal inference, under this framing, is a missing data problem.\nThe average treatment effect (ATE) averages over individuals:\n\\[\\text{ATE} = \\mathbb{E}[Y(1) - Y(0)] \\tag{7.2}\\]\nThis can be estimated from data under assumptions — most importantly, that treatment assignment is independent of potential outcomes, given observed covariates (the ignorability assumption).",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Counterfactuals</span>"
+    ]
+  },
+  {
+    "objectID": "07-counterfactuals.html#structural-counterfactuals",
+    "href": "07-counterfactuals.html#structural-counterfactuals",
+    "title": "7  Counterfactuals",
+    "section": "7.3 Structural Counterfactuals",
+    "text": "7.3 Structural Counterfactuals\nPearl’s structural approach is equivalent to potential outcomes but starts from a different place. A structural causal model assigns each variable an equation that determines its value from its parents and an independent noise term \\(U\\):\n\\[Y = f(X, U_Y)\\]\nA counterfactual is computed in three steps:\n\nAbduction: Update the noise terms \\(U\\) using observed evidence. This gives the specific “noise configuration” that produced the observed world.\nAction: Intervene — set \\(X\\) to the counterfactual value.\nPrediction: Compute \\(Y\\) under the modified model with the updated \\(U\\).\n\nThe noise terms carry the individual’s characteristics into the counterfactual world, ensuring consistency: the counterfactual shares the same background factors as the actual world, except for the intervention.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nrng = np.random.default_rng(1)\nn = 200\n\n# Structural equations: Y = 2*X + U_Y, X = Z + U_X\nU_X = rng.normal(0, 1, n)\nU_Y = rng.normal(0, 1, n)\nZ = rng.binomial(1, 0.5, n)   # instrument (affects X but not Y directly)\n\nX_obs = Z + U_X                # observed treatment (continuous, influenced by Z)\n# Heterogeneous treatment effect: true effect varies by unit (mean = 2)\ntrue_effect = 2.0 + rng.normal(0, 0.4, n)\nY_obs = true_effect * X_obs + U_Y    # observed outcome\n\n# Counterfactual: what if everyone had X_cf = X_obs + 1 (dose increase of 1)?\nX_cf = X_obs + 1\n# Hold U_Y fixed (same individual, different treatment)\nY_cf = true_effect * X_cf + U_Y\n\nindividual_effects = Y_cf - Y_obs   # = true_effect * 1, varies around 2\n\nfig, axes = plt.subplots(1, 2, figsize=(12, 4))\naxes[0].scatter(X_obs, Y_obs, alpha=0.4, s=15, color=\"#4e79a7\", label=\"Observed\")\naxes[0].scatter(X_cf, Y_cf, alpha=0.4, s=15, color=\"#f28e2b\", label=\"Counterfactual\")\naxes[0].set_xlabel(\"X\"); axes[0].set_ylabel(\"Y\")\naxes[0].set_title(\"Observed vs. counterfactual outcomes\")\naxes[0].legend()\n\naxes[1].hist(individual_effects, bins=30, color=\"#59a14f\", alpha=0.8, edgecolor=\"white\")\naxes[1].axvline(2, color=\"red\", linestyle=\"--\", label=\"Mean true ITE = 2\")\naxes[1].set_xlabel(\"Individual treatment effect\"); axes[1].set_ylabel(\"Count\")\naxes[1].set_title(\"Distribution of individual treatment effects\")\naxes[1].legend()\n\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 7.1: Simulated counterfactual: actual vs. counterfactual outcomes under different treatment assignments.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Counterfactuals</span>"
+    ]
+  },
+  {
+    "objectID": "07-counterfactuals.html#summary",
+    "href": "07-counterfactuals.html#summary",
+    "title": "7  Counterfactuals",
+    "section": "7.4 Summary",
+    "text": "7.4 Summary\n\nCounterfactual questions ask about what would have happened under different conditions — they are permanently unobservable for any individual.\nThe potential outcomes framework defines \\(Y_i(t)\\) for each unit and treatment; only one potential outcome is ever observed.\nThe individual treatment effect \\(\\tau_i = Y_i(1) - Y_i(0)\\) cannot be directly measured; the average treatment effect can be estimated under appropriate assumptions.\nStructural counterfactuals use noise variables and the three-step abduction-action-prediction procedure to place counterfactual reasoning on a firm mathematical footing.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Counterfactuals</span>"
+    ]
+  },
+  {
+    "objectID": "07-counterfactuals.html#further-reading",
+    "href": "07-counterfactuals.html#further-reading",
+    "title": "7  Counterfactuals",
+    "section": "7.5 Further Reading",
+    "text": "7.5 Further Reading\nImbens and Rubin (2015) is the comprehensive reference for potential outcomes and treatment effect estimation. Pearl (2009) covers structural counterfactuals in Chapter 7. For a more philosophical treatment, chapter 8 of Pearl and Mackenzie (2018) is accessible and thought-provoking.\n\n\n\n\n\n\nImbens, Guido W., and Donald B. Rubin. 2015. Causal Inference for Statistics, Social, and Biomedical Sciences. Cambridge University Press.\n\n\nPearl, Judea. 2009. Causality: Models, Reasoning, and Inference. 2nd ed. Cambridge University Press.\n\n\nPearl, Judea, and Dana Mackenzie. 2018. The Book of Why: The New Science of Cause and Effect. Basic Books.",
+    "crumbs": [
+      "Part II: Causal Inference",
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Counterfactuals</span>"
+    ]
+  },
+  {
+    "objectID": "08-limits-of-logic.html",
+    "href": "08-limits-of-logic.html",
+    "title": "8  The Limits of Classical Logic",
+    "section": "",
+    "text": "8.1 Aristotle’s Two-Valued World\nFor most of the history of Western thought, logic was binary. A proposition was either true or false. A thing either belonged to a category or it did not. Aristotle’s law of excluded middle — tertium non datur, there is no third option — seemed like a foundational truth about the universe, as natural as the fact that a light switch is either on or off.\nThis worked beautifully for the kinds of propositions that interested ancient mathematicians. “7 is a prime number” is true. “7 is an even number” is false. There is no middle ground.\nIt works less beautifully in the world most of us inhabit.\nIs a virus alive? Is this color red or orange? Is this person tall? Is 10,000 dollars a large amount of money? Each of these questions has obvious answers that sit in neither the true nor false bin but somewhere in between. Classical logic, presented with “is this person bald?” has no choice but to answer yes or no. Our intuitions rebel.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>The Limits of Classical Logic</span>"
+    ]
+  },
+  {
+    "objectID": "08-limits-of-logic.html#the-sorites-paradox",
+    "href": "08-limits-of-logic.html#the-sorites-paradox",
+    "title": "8  The Limits of Classical Logic",
+    "section": "8.2 The Sorites Paradox",
+    "text": "8.2 The Sorites Paradox\nThe Greeks noticed this problem. The Sorites Paradox — from soros, the Greek word for heap — goes like this:\nOne grain of sand is not a heap. If \\(n\\) grains of sand is not a heap, then \\(n+1\\) grains is not a heap either. Therefore, by induction: no number of grains of sand is a heap.\nThe argument is formally valid, but the conclusion is absurd. The fault lies not in the logic but in the premise that the predicate “heap” has a sharp boundary. It does not. Heapness accumulates gradually, and classical logic has no way to represent gradual accumulation.\nThis is not a philosophical curiosity. It is a structural limitation of the two-valued framework.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>The Limits of Classical Logic</span>"
+    ]
+  },
+  {
+    "objectID": "08-limits-of-logic.html#toward-many-values",
+    "href": "08-limits-of-logic.html#toward-many-values",
+    "title": "8  The Limits of Classical Logic",
+    "section": "8.3 Toward Many Values",
+    "text": "8.3 Toward Many Values\nBy the early twentieth century, logicians were experimenting with alternatives. Jan Łukasiewicz proposed three-valued logic in 1920, adding a third value for “possible” or “indeterminate” — useful for future-contingent propositions like “there will be a sea battle tomorrow.” Emil Post generalized this to \\(n\\)-valued logics.\nThese systems retained the idea that truth values come from a discrete set. The leap to fuzzy logic, proposed by Lotfi Zadeh in 1965, was to let truth values range over the entire continuous interval \\([0, 1]\\). This small change — from discrete to continuous — had large consequences, as we will see in the next two chapters.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nheights = np.linspace(140, 220, 500)\n\n# Classical (crisp) membership: tall if &gt;= 180 cm\ncrisp_tall = (heights &gt;= 180).astype(float)\n\nfig, ax = plt.subplots(figsize=(9, 4))\nax.plot(heights, crisp_tall, color=\"#e15759\", linewidth=2.5, label=\"Classical: tall if ≥ 180 cm\")\nax.axvline(180, color=\"#e15759\", linestyle=\"--\", alpha=0.5)\nax.set_xlabel(\"Height (cm)\")\nax.set_ylabel(\"Membership in 'tall'\")\nax.set_title(\"The problem with classical logic for gradual categories\")\nax.set_ylim(-0.1, 1.2)\nax.set_yticks([0, 0.5, 1])\nax.set_yticklabels([\"False (0)\", \"—\", \"True (1)\"])\nax.legend()\nax.annotate(\"Is 179.9 cm\\nnot tall at all?\", xy=(179.9, 0.05),\n            xytext=(160, 0.4), arrowprops=dict(arrowstyle=\"-&gt;\", color=\"gray\"),\n            fontsize=9, color=\"gray\")\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 8.1: A Boolean (crisp) membership function for ‘tall’ cannot represent the gradual nature of height categories.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>The Limits of Classical Logic</span>"
+    ]
+  },
+  {
+    "objectID": "08-limits-of-logic.html#summary",
+    "href": "08-limits-of-logic.html#summary",
+    "title": "8  The Limits of Classical Logic",
+    "section": "8.4 Summary",
+    "text": "8.4 Summary\n\nClassical (Aristotelian) logic assigns every proposition a value of true or false; there is no middle ground.\nThe Sorites Paradox shows that many natural language predicates — heap, tall, bald, red — do not have sharp boundaries; classical logic cannot represent them faithfully.\nMultivalued logics (Łukasiewicz, Post) introduced discrete intermediate truth values; fuzzy logic extended this to a continuous \\([0,1]\\) interval.\nThe limitation is not with logic itself but with the assumption that categories have crisp boundaries.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>The Limits of Classical Logic</span>"
+    ]
+  },
+  {
+    "objectID": "08-limits-of-logic.html#further-reading",
+    "href": "08-limits-of-logic.html#further-reading",
+    "title": "8  The Limits of Classical Logic",
+    "section": "8.5 Further Reading",
+    "text": "8.5 Further Reading\nKosko (1993) is an opinionated but readable introduction to fuzzy thinking, written for a broad audience. For the philosophical background on vagueness, Timothy Williamson’s Vagueness is the rigorous treatment, though demanding. The original Zadeh paper is concise and worth reading: Zadeh (1965).\n\n\n\n\n\n\nKosko, Bart. 1993. Fuzzy Thinking: The New Science of Fuzzy Logic. Hyperion.\n\n\nZadeh, Lotfi A. 1965. Fuzzy Sets. In Information and Control, vol. 8.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>The Limits of Classical Logic</span>"
+    ]
+  },
+  {
+    "objectID": "09-fuzzy-sets.html",
+    "href": "09-fuzzy-sets.html",
+    "title": "9  Fuzzy Sets and Membership Functions",
+    "section": "",
+    "text": "9.1 The Spectrum of Belonging\nIn classical set theory, an element either belongs to a set or it does not. In fuzzy set theory, proposed by Lotfi Zadeh in 1965, an element belongs to a set to a degree, expressed as a number in \\([0, 1]\\).\nFormally, a fuzzy set \\(A\\) in a universe \\(X\\) is defined by a membership function:\n\\[\\mu_A : X \\to [0, 1] \\tag{9.1}\\]\nFor any element \\(x \\in X\\), \\(\\mu_A(x) = 0\\) means \\(x\\) is definitely not in \\(A\\); \\(\\mu_A(x) = 1\\) means \\(x\\) is definitely in \\(A\\); and any value between means partial membership.\nA classical (crisp) set is a special case: \\(\\mu_A(x) \\in \\{0, 1\\}\\) for all \\(x\\).",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Fuzzy Sets and Membership Functions</span>"
+    ]
+  },
+  {
+    "objectID": "09-fuzzy-sets.html#membership-function-shapes",
+    "href": "09-fuzzy-sets.html#membership-function-shapes",
+    "title": "9  Fuzzy Sets and Membership Functions",
+    "section": "9.2 Membership Function Shapes",
+    "text": "9.2 Membership Function Shapes\nThe membership function is a design choice. Several standard shapes recur throughout applications:\nTriangular: rises linearly to a peak and falls linearly. Good for representing “approximately equal to a target value.”\nTrapezoidal: flat at the top — a range of full membership before gradual fall-off at the edges.\nGaussian: smooth, symmetric bell curve. Natural when the concept has a central prototype and uncertainty increases with distance from it.\nSigmoid: S-shaped. Useful for unipolar concepts like “large” or “fast,” where there is no natural peak but a one-sided gradual transition.\nThe choice of shape should reflect the semantics of the concept being represented. There is no universal right answer — the function is a model of human judgment, and different experts may draw it differently.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Fuzzy Sets and Membership Functions</span>"
+    ]
+  },
+  {
+    "objectID": "09-fuzzy-sets.html#fuzzy-set-operations",
+    "href": "09-fuzzy-sets.html#fuzzy-set-operations",
+    "title": "9  Fuzzy Sets and Membership Functions",
+    "section": "9.3 Fuzzy Set Operations",
+    "text": "9.3 Fuzzy Set Operations\nThe standard operations on fuzzy sets generalize their classical counterparts:\nComplement: \\(\\mu_{\\bar{A}}(x) = 1 - \\mu_A(x)\\)\nIntersection (AND): \\(\\mu_{A \\cap B}(x) = \\min(\\mu_A(x), \\mu_B(x))\\)\nUnion (OR): \\(\\mu_{A \\cup B}(x) = \\max(\\mu_A(x), \\mu_B(x))\\)\nThese are the standard min/max operators introduced by Zadeh. Alternative t-norms and t-conorms exist (product, Łukasiewicz), each with different mathematical properties, but the min/max versions remain the most widely used.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Fuzzy Sets and Membership Functions</span>"
+    ]
+  },
+  {
+    "objectID": "09-fuzzy-sets.html#linguistic-variables",
+    "href": "09-fuzzy-sets.html#linguistic-variables",
+    "title": "9  Fuzzy Sets and Membership Functions",
+    "section": "9.4 Linguistic Variables",
+    "text": "9.4 Linguistic Variables\nA linguistic variable is a variable whose values are words or phrases in a natural language, each described by a fuzzy set. Temperature might be a linguistic variable with values cold, cool, comfortable, warm, and hot — five fuzzy sets defined over the same numerical domain.\nLinguistic variables bridge the gap between human qualitative judgment and numerical computation. An expert who thinks in terms of “the reactor is running hot” can communicate directly with a fuzzy controller through linguistic variables, without translating their knowledge into precise numerical thresholds.\n\n\nCode\nimport numpy as np\nimport skfuzzy as fuzz\nimport matplotlib.pyplot as plt\n\ntemp = np.arange(0, 101, 1)\n\ncold      = fuzz.trapmf(temp, [0,  0,  10, 25])\ncool      = fuzz.trimf(temp,  [10, 25, 40])\ncomfortable = fuzz.trimf(temp, [25, 40, 60])\nwarm      = fuzz.trimf(temp,  [45, 60, 75])\nhot       = fuzz.trapmf(temp, [65, 80, 100, 100])\n\nfig, ax = plt.subplots(figsize=(10, 4))\nax.plot(temp, cold,        \"#4e79a7\", lw=2, label=\"Cold\")\nax.plot(temp, cool,        \"#76b7b2\", lw=2, label=\"Cool\")\nax.plot(temp, comfortable, \"#59a14f\", lw=2, label=\"Comfortable\")\nax.plot(temp, warm,        \"#f28e2b\", lw=2, label=\"Warm\")\nax.plot(temp, hot,         \"#e15759\", lw=2, label=\"Hot\")\n\nax.set_xlabel(\"Temperature (°F)\")\nax.set_ylabel(\"Degree of membership\")\nax.set_title(\"Linguistic variable: Temperature\")\nax.legend(loc=\"upper right\")\nax.set_ylim(-0.05, 1.15)\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 9.1: Fuzzy membership functions for the linguistic variable ‘temperature’. Each label covers a range with gradual transitions.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Fuzzy Sets and Membership Functions</span>"
+    ]
+  },
+  {
+    "objectID": "09-fuzzy-sets.html#summary",
+    "href": "09-fuzzy-sets.html#summary",
+    "title": "9  Fuzzy Sets and Membership Functions",
+    "section": "9.5 Summary",
+    "text": "9.5 Summary\n\nA fuzzy set generalizes the classical notion by assigning each element a degree of membership in \\([0,1]\\).\nCommon membership function shapes — triangular, trapezoidal, Gaussian, sigmoid — are chosen to reflect the semantics of the concept.\nFuzzy set operations (complement, intersection, union) generalize their classical counterparts using \\(1-x\\), min, and max respectively.\nLinguistic variables assign fuzzy set labels to natural language terms, enabling numerical systems to reason with qualitative categories.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Fuzzy Sets and Membership Functions</span>"
+    ]
+  },
+  {
+    "objectID": "09-fuzzy-sets.html#further-reading",
+    "href": "09-fuzzy-sets.html#further-reading",
+    "title": "9  Fuzzy Sets and Membership Functions",
+    "section": "9.6 Further Reading",
+    "text": "9.6 Further Reading\nZadeh (1965) is the original paper — short, readable, and historically important. Kosko (1993) provides a broader and more philosophical treatment. The scikit-fuzzy library used here is well-documented and covers all the material in Chapters 9 and 10.\n\n\n\n\n\n\nKosko, Bart. 1993. Fuzzy Thinking: The New Science of Fuzzy Logic. Hyperion.\n\n\nZadeh, Lotfi A. 1965. Fuzzy Sets. In Information and Control, vol. 8.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Fuzzy Sets and Membership Functions</span>"
+    ]
+  },
+  {
+    "objectID": "10-fuzzy-inference.html",
+    "href": "10-fuzzy-inference.html",
+    "title": "10  Fuzzy Inference Systems",
+    "section": "",
+    "text": "10.1 The Machine That Thinks in Words\nConsider the challenge of designing a controller for a building’s ventilation system. A human facilities manager might describe their rule of thumb like this: “If the temperature is hot and the humidity is high, run the fans fast. If the temperature is comfortable and the humidity is moderate, run the fans slowly.”\nA classical engineer would translate these statements into crisp thresholds and piece-wise constant rules. A fuzzy inference system takes a different approach: it encodes the rules in exactly the form the expert stated them — using linguistic variables and fuzzy sets — and handles all the numerical computation underneath.\nThe result is a controller that behaves with the same graceful continuity that good human judgment shows. It does not snap from “slow fan” to “fast fan” at a precise threshold. It transitions smoothly, exactly as a thoughtful person would.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Fuzzy Inference Systems</span>"
+    ]
+  },
+  {
+    "objectID": "10-fuzzy-inference.html#structure-of-a-fuzzy-inference-system",
+    "href": "10-fuzzy-inference.html#structure-of-a-fuzzy-inference-system",
+    "title": "10  Fuzzy Inference Systems",
+    "section": "10.2 Structure of a Fuzzy Inference System",
+    "text": "10.2 Structure of a Fuzzy Inference System\nEvery FIS operates in three stages:\n1. Fuzzification. Convert crisp input values (e.g., temperature = 78°F) into degrees of membership in the relevant fuzzy sets (e.g., “warm” = 0.6, “comfortable” = 0.4).\n2. Rule evaluation. Apply the fuzzy rule base. Each rule has the form:\n\nIF temperature IS warm AND humidity IS moderate THEN fan speed IS medium\n\nThe antecedents are combined using fuzzy AND (min) or OR (max), and the result is an activation level for the consequent fuzzy set.\n3. Defuzzification. Aggregate the activated consequent sets and convert the resulting fuzzy set into a single crisp output value.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Fuzzy Inference Systems</span>"
+    ]
+  },
+  {
+    "objectID": "10-fuzzy-inference.html#mamdani-vs.-sugeno",
+    "href": "10-fuzzy-inference.html#mamdani-vs.-sugeno",
+    "title": "10  Fuzzy Inference Systems",
+    "section": "10.3 Mamdani vs. Sugeno",
+    "text": "10.3 Mamdani vs. Sugeno\nMamdani inference (1974) is the most intuitive architecture. Both inputs and outputs are represented as fuzzy sets. The output is a fuzzy set, which must be defuzzified to yield a crisp value. Mamdani systems are interpretable: you can plot the output fuzzy set and see how the rules combined to produce it.\nSugeno inference (1985) replaces the output fuzzy sets with crisp functions of the inputs. This makes computation faster and analytical results easier to derive, but sacrifices some of the linguistic interpretability.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Fuzzy Inference Systems</span>"
+    ]
+  },
+  {
+    "objectID": "10-fuzzy-inference.html#defuzzification",
+    "href": "10-fuzzy-inference.html#defuzzification",
+    "title": "10  Fuzzy Inference Systems",
+    "section": "10.4 Defuzzification",
+    "text": "10.4 Defuzzification\nThe most common defuzzification method is the centroid (center of mass): find the center of gravity of the output fuzzy set.\n\\[y^* = \\frac{\\int y \\cdot \\mu(y) \\, dy}{\\int \\mu(y) \\, dy} \\tag{10.1}\\]\nOther methods include the mean of maxima (average location of the highest-membership region) and the bisector (the point that divides the area of the output set in half). Each choice gives a slightly different crisp output, and the choice can matter in edge cases.\n\n\nCode\nimport numpy as np\nimport skfuzzy as fuzz\nfrom skfuzzy import control as ctrl\nimport matplotlib.pyplot as plt\n\n# Antecedent (input) variables\ntemperature = ctrl.Antecedent(np.arange(0, 101, 1), 'temperature')\nhumidity    = ctrl.Antecedent(np.arange(0, 101, 1), 'humidity')\n\n# Consequent (output) variable\nfan_speed   = ctrl.Consequent(np.arange(0, 101, 1), 'fan_speed')\n\n# Membership functions — temperature\ntemperature['cool']        = fuzz.trimf(temperature.universe, [0,  20, 45])\ntemperature['comfortable'] = fuzz.trimf(temperature.universe, [30, 50, 70])\ntemperature['warm']        = fuzz.trimf(temperature.universe, [55, 75, 90])\ntemperature['hot']         = fuzz.trapmf(temperature.universe, [80, 90, 100, 100])\n\n# Membership functions — humidity\nhumidity['low']    = fuzz.trapmf(humidity.universe, [0,  0,  20, 40])\nhumidity['medium'] = fuzz.trimf(humidity.universe, [25, 50, 75])\nhumidity['high']   = fuzz.trapmf(humidity.universe, [60, 80, 100, 100])\n\n# Membership functions — fan speed\nfan_speed['low']    = fuzz.trapmf(fan_speed.universe, [0,  0,  20, 40])\nfan_speed['medium'] = fuzz.trimf(fan_speed.universe, [25, 50, 75])\nfan_speed['high']   = fuzz.trapmf(fan_speed.universe, [60, 80, 100, 100])\n\n# Rules\nrule1 = ctrl.Rule(temperature['hot']   | humidity['high'],   fan_speed['high'])\nrule2 = ctrl.Rule(temperature['warm']  & humidity['medium'], fan_speed['medium'])\nrule3 = ctrl.Rule(temperature['comfortable'],                fan_speed['low'])\nrule4 = ctrl.Rule(temperature['cool'],                       fan_speed['low'])\n\n# Control system\nfan_ctrl   = ctrl.ControlSystem([rule1, rule2, rule3, rule4])\nfan_sim    = ctrl.ControlSystemSimulation(fan_ctrl)\n\n# Test with a specific input\nfan_sim.input['temperature'] = 82\nfan_sim.input['humidity']    = 70\nfan_sim.compute()\n\nprint(f\"Temperature: 82°F, Humidity: 70%\")\nprint(f\"Inferred fan speed: {fan_sim.output['fan_speed']:.1f}%\")\n\n# Visualize the output membership with activation\nfan_speed.view(sim=fan_sim)\nplt.suptitle(\"FIS output: fan speed activation\")\nplt.tight_layout()\nplt.show()\n\n\nTemperature: 82°F, Humidity: 70%\nInferred fan speed: 71.7%\n\n\n\n\n\n\n\n\nFigure 10.1: A simple Mamdani FIS for fan speed control. Given temperature and humidity inputs, the system infers a fan speed.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Fuzzy Inference Systems</span>"
+    ]
+  },
+  {
+    "objectID": "10-fuzzy-inference.html#summary",
+    "href": "10-fuzzy-inference.html#summary",
+    "title": "10  Fuzzy Inference Systems",
+    "section": "10.5 Summary",
+    "text": "10.5 Summary\n\nA fuzzy inference system processes crisp inputs through three stages: fuzzification, rule evaluation, and defuzzification.\nRules are stated in natural language (IF-THEN) and evaluated using fuzzy set operations.\nMamdani systems use fuzzy output sets (more interpretable); Sugeno systems use crisp output functions (more efficient).\nDefuzzification converts the output fuzzy set back to a single number; the centroid method is the most widely used.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Fuzzy Inference Systems</span>"
+    ]
+  },
+  {
+    "objectID": "10-fuzzy-inference.html#further-reading",
+    "href": "10-fuzzy-inference.html#further-reading",
+    "title": "10  Fuzzy Inference Systems",
+    "section": "10.6 Further Reading",
+    "text": "10.6 Further Reading\nThe original Mamdani paper (An experiment in linguistic synthesis with a fuzzy logic controller, 1975) is readable and shows the engineering motivation clearly. The scikit-fuzzy documentation includes several worked examples. Kosko (1993) provides broader context on why fuzzy systems were controversial and where they found their strongest applications (Japanese consumer electronics, control systems).\n\n\n\n\n\n\nKosko, Bart. 1993. Fuzzy Thinking: The New Science of Fuzzy Logic. Hyperion.",
+    "crumbs": [
+      "Part III: Fuzzy Logic and Vague Reasoning",
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Fuzzy Inference Systems</span>"
+    ]
+  },
+  {
+    "objectID": "11-regression-to-neural-nets.html",
+    "href": "11-regression-to-neural-nets.html",
+    "title": "11  From Regression to Neural Networks",
+    "section": "",
+    "text": "11.1 The Simplest Learner\nLinear regression is one of the oldest and most useful ideas in statistics. Given a set of inputs \\(\\mathbf{x}\\) and a numerical output \\(y\\), it finds a weighted combination of the inputs that best predicts the output:\n\\[\\hat{y} = w_0 + w_1 x_1 + w_2 x_2 + \\ldots + w_p x_p \\tag{11.1}\\]\nThe weights \\(\\mathbf{w}\\) are chosen to minimize the mean squared error over the training data. The result is a linear model: the prediction surface is a hyperplane.\nThis simplicity is both the strength and the limitation of linear regression. It makes the model interpretable — each weight tells you, directly, how much a unit increase in \\(x_i\\) shifts the prediction. But it cannot capture non-linear relationships. A system that behaves like a parabola, or a sinusoid, or an interaction between two variables, will not be well-served by a linear model.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>From Regression to Neural Networks</span>"
+    ]
+  },
+  {
+    "objectID": "11-regression-to-neural-nets.html#logistic-regression-and-the-classification-problem",
+    "href": "11-regression-to-neural-nets.html#logistic-regression-and-the-classification-problem",
+    "title": "11  From Regression to Neural Networks",
+    "section": "11.2 Logistic Regression and the Classification Problem",
+    "text": "11.2 Logistic Regression and the Classification Problem\nWhen the output is a category rather than a continuous number, we need a different approach. Logistic regression models the probability of belonging to a class:\n\\[P(y = 1 \\mid \\mathbf{x}) = \\sigma(\\mathbf{w}^T \\mathbf{x}) = \\frac{1}{1 + e^{-\\mathbf{w}^T \\mathbf{x}}} \\tag{11.2}\\]\nThe sigmoid function \\(\\sigma\\) squashes any real number into \\((0, 1)\\), making it interpretable as a probability. Despite the name, logistic “regression” is a classifier. The decision boundary is a hyperplane.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>From Regression to Neural Networks</span>"
+    ]
+  },
+  {
+    "objectID": "11-regression-to-neural-nets.html#the-perceptron-and-its-limits",
+    "href": "11-regression-to-neural-nets.html#the-perceptron-and-its-limits",
+    "title": "11  From Regression to Neural Networks",
+    "section": "11.3 The Perceptron and Its Limits",
+    "text": "11.3 The Perceptron and Its Limits\nFrank Rosenblatt’s perceptron (1958) was an early attempt to build a learning machine modeled loosely on the neuron. It is essentially a logistic regression with a step activation instead of sigmoid: output 1 if the weighted sum exceeds a threshold, 0 otherwise.\nThe perceptron can learn any linearly separable classification problem. In 1969, Minsky and Papert proved that it cannot learn XOR — a pattern that requires a non-linear boundary. This result temporarily deflated enthusiasm for neural networks.\nThe fix, which took another decade to fully materialize, was to stack perceptrons in layers.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>From Regression to Neural Networks</span>"
+    ]
+  },
+  {
+    "objectID": "11-regression-to-neural-nets.html#multi-layer-networks",
+    "href": "11-regression-to-neural-nets.html#multi-layer-networks",
+    "title": "11  From Regression to Neural Networks",
+    "section": "11.4 Multi-Layer Networks",
+    "text": "11.4 Multi-Layer Networks\nA multi-layer network adds one or more hidden layers between input and output. Each hidden unit computes a weighted sum of its inputs and applies a non-linear activation function. This breaks the linearity constraint.\nThe key insight: a single hidden layer with enough units can approximate any continuous function to arbitrary accuracy (the Universal Approximation Theorem). Multiple layers allow the network to learn hierarchical representations — each layer building on the features learned by the layer below.\nTraining is done by backpropagation: compute the gradient of the loss with respect to every weight in the network, then update the weights in the direction that reduces the loss.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom sklearn.neural_network import MLPClassifier\nfrom sklearn.inspection import DecisionBoundaryDisplay\n\n# XOR data\nX = np.array([[0,0],[0,1],[1,0],[1,1]])\ny = np.array([0, 1, 1, 0])\n\nclf = MLPClassifier(hidden_layer_sizes=(8, 8), activation='relu',\n                    max_iter=2000, random_state=0)\nclf.fit(X, y)\n\nfig, ax = plt.subplots(figsize=(6, 5))\ndisp = DecisionBoundaryDisplay.from_estimator(clf, X, response_method=\"predict\",\n                                               ax=ax, alpha=0.4,\n                                               cmap=plt.cm.RdBu)\nax.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.RdBu, edgecolors='k', s=100, zorder=5)\nfor xi, label in zip(X, y):\n    ax.annotate(f\"XOR={label}\", (xi[0]+0.05, xi[1]+0.05), fontsize=9)\nax.set_title(\"MLP decision boundary: XOR problem\")\nax.set_xlabel(\"x₁\"); ax.set_ylabel(\"x₂\")\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 11.1: A multi-layer network learns the non-linear XOR boundary that a single perceptron cannot. Decision regions shown.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>From Regression to Neural Networks</span>"
+    ]
+  },
+  {
+    "objectID": "11-regression-to-neural-nets.html#summary",
+    "href": "11-regression-to-neural-nets.html#summary",
+    "title": "11  From Regression to Neural Networks",
+    "section": "11.5 Summary",
+    "text": "11.5 Summary\n\nLinear regression finds the best-fitting hyperplane through the data; it is interpretable but cannot capture non-linear patterns.\nLogistic regression extends linear regression to classification by applying the sigmoid function.\nThe perceptron learns linearly separable problems; the multi-layer network overcomes this limitation through hidden layers and non-linear activations.\nBackpropagation computes gradients efficiently by applying the chain rule through the network; it is the engine of modern deep learning.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>From Regression to Neural Networks</span>"
+    ]
+  },
+  {
+    "objectID": "11-regression-to-neural-nets.html#further-reading",
+    "href": "11-regression-to-neural-nets.html#further-reading",
+    "title": "11  From Regression to Neural Networks",
+    "section": "11.6 Further Reading",
+    "text": "11.6 Further Reading\nGoodfellow et al. (2016) is the standard graduate-level reference. Chapter 6 covers multi-layer networks in depth. For a more accessible treatment, Michael Nielsen’s free online book Neural Networks and Deep Learning (neuralnetworksanddeeplearning.com) is excellent.\n\n\n\n\n\n\nGoodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. Deep Learning. MIT Press.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>11</span>  <span class='chapter-title'>From Regression to Neural Networks</span>"
+    ]
+  },
+  {
+    "objectID": "12-deep-learning.html",
+    "href": "12-deep-learning.html",
+    "title": "12  Deep Learning and Representation",
+    "section": "",
+    "text": "12.1 What Depth Buys You\nA neural network with one hidden layer can approximate any continuous function. So why do we need deep networks — networks with many layers?\nThe answer is efficiency. A shallow network may need exponentially many units to represent a function that a deep network can represent with polynomially many. More importantly, depth enables hierarchical representation learning: each layer transforms its inputs into increasingly abstract features.\nThis is visible in convolutional networks trained on images. The first layer learns to detect edges and color gradients. The second layer combines edges into shapes. The third layer combines shapes into object parts. The final layers combine parts into objects. At no point was this hierarchy specified by the designer — it emerged from learning.\nThis spontaneous organization mirrors what we know about the visual cortex: it too processes visual information in a hierarchy of increasing abstraction, from V1 (edges) to higher areas (faces, scenes).",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Deep Learning and Representation</span>"
+    ]
+  },
+  {
+    "objectID": "12-deep-learning.html#convolutional-networks",
+    "href": "12-deep-learning.html#convolutional-networks",
+    "title": "12  Deep Learning and Representation",
+    "section": "12.2 Convolutional Networks",
+    "text": "12.2 Convolutional Networks\nConvolutional Neural Networks (CNNs) exploit a simple structure in visual data: nearby pixels are more informative about each other than distant pixels, and useful features look similar no matter where they appear in the image.\nA convolutional layer learns small filters — typically 3×3 or 5×5 patches — that are slid across the entire input. Each filter detects a particular local pattern. Because the same filter is applied everywhere (weight sharing), the network learns translation-invariant features without needing separate weights for each image location.\nPooling layers downsample the feature maps, progressively reducing spatial resolution while increasing the number of abstract feature channels.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Deep Learning and Representation</span>"
+    ]
+  },
+  {
+    "objectID": "12-deep-learning.html#attention-and-transformers",
+    "href": "12-deep-learning.html#attention-and-transformers",
+    "title": "12  Deep Learning and Representation",
+    "section": "12.3 Attention and Transformers",
+    "text": "12.3 Attention and Transformers\nThe architectural innovation that transformed natural language processing — and subsequently much of the rest of deep learning — was the attention mechanism (Vaswani et al., 2017). Rather than processing sequences step by step, attention allows every element in a sequence to directly interact with every other element, with interaction strength learned from the data.\nA transformer is a network built entirely from attention layers. It has no recurrence, no convolution. It processes the entire sequence in parallel. The result was a dramatic improvement in performance on language tasks, and then on image recognition, protein structure prediction, and much else.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Deep Learning and Representation</span>"
+    ]
+  },
+  {
+    "objectID": "12-deep-learning.html#representation-learning-and-transfer",
+    "href": "12-deep-learning.html#representation-learning-and-transfer",
+    "title": "12  Deep Learning and Representation",
+    "section": "12.4 Representation Learning and Transfer",
+    "text": "12.4 Representation Learning and Transfer\nOne of the most practically significant properties of deep networks is that the representations learned for one task transfer to others. A network trained on ImageNet (1.4 million labeled images) learns representations of shapes, textures, and objects that are useful for almost any visual task — even tasks quite different from the original.\nThis is transfer learning. It means that organizations without access to massive labeled datasets can still benefit from deep learning by fine-tuning a pre-trained network on their specific problem.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom sklearn.neural_network import MLPClassifier\nfrom sklearn.datasets import make_moons\n\nX, y = make_moons(n_samples=300, noise=0.2, random_state=42)\n\nclf = MLPClassifier(hidden_layer_sizes=(8,), activation='relu',\n                    max_iter=1000, random_state=0)\nclf.fit(X, y)\n\n# Hidden layer activations (first layer output before final classification)\nhidden_activations = np.maximum(0, X @ clf.coefs_[0] + clf.intercepts_[0])\n\nfig, axes = plt.subplots(1, 2, figsize=(12, 4))\n\naxes[0].scatter(X[:, 0], X[:, 1], c=y, cmap='RdBu', edgecolors='k', s=20, alpha=0.7)\naxes[0].set_title(\"Input space (not linearly separable)\")\naxes[0].set_xlabel(\"x₁\"); axes[0].set_ylabel(\"x₂\")\n\naxes[1].scatter(hidden_activations[:, 0], hidden_activations[:, 1],\n                c=y, cmap='RdBu', edgecolors='k', s=20, alpha=0.7)\naxes[1].set_title(\"Learned representation (hidden layer)\")\naxes[1].set_xlabel(\"h₁\"); axes[1].set_ylabel(\"h₂\")\n\nplt.suptitle(\"Representation learning: from tangled to separable\", y=1.02)\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 12.1: A two-layer network learns to separate a non-linearly separable dataset. Plotting the hidden-layer activations reveals the learned representation.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Deep Learning and Representation</span>"
+    ]
+  },
+  {
+    "objectID": "12-deep-learning.html#summary",
+    "href": "12-deep-learning.html#summary",
+    "title": "12  Deep Learning and Representation",
+    "section": "12.5 Summary",
+    "text": "12.5 Summary\n\nDepth enables hierarchical feature learning: each layer builds increasingly abstract representations on top of the previous layer’s output.\nConvolutional networks exploit spatial locality and translation invariance for visual data; weight sharing dramatically reduces the number of parameters.\nThe attention mechanism allows direct interaction between all elements of a sequence; transformers are built from attention layers and have become the dominant architecture in language modeling.\nTransfer learning exploits the generality of learned representations: networks pre-trained on large datasets can be fine-tuned for specific tasks at much lower cost.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Deep Learning and Representation</span>"
+    ]
+  },
+  {
+    "objectID": "12-deep-learning.html#further-reading",
+    "href": "12-deep-learning.html#further-reading",
+    "title": "12  Deep Learning and Representation",
+    "section": "12.6 Further Reading",
+    "text": "12.6 Further Reading\nGoodfellow et al. (2016) covers CNNs in Chapter 9 and sequence models in Chapter 10. The original transformer paper, Vaswani et al. (2017), Attention Is All You Need, is short and readable. For a conceptual treatment of representation learning, Bengio et al. (2013), Representation Learning: A Review and New Perspectives is the standard survey.\n\n\n\n\n\n\nGoodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. Deep Learning. MIT Press.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>12</span>  <span class='chapter-title'>Deep Learning and Representation</span>"
+    ]
+  },
+  {
+    "objectID": "13-causal-ml.html",
+    "href": "13-causal-ml.html",
+    "title": "13  Causal Machine Learning",
+    "section": "",
+    "text": "13.1 The Prediction-Causation Gap\nMachine learning is extraordinarily good at prediction. Given a patient’s medical history, it can predict the probability of readmission with striking accuracy. Given a customer’s browsing history, it can predict the probability of purchase. Given atmospheric measurements, it can predict tomorrow’s weather better than any formula a meteorologist could write by hand.\nBut prediction is Rung 1 on Pearl’s causal ladder. The question “what would happen if we intervened?” is Rung 2, and standard ML models cannot answer it — not because of insufficient data, but because they were not designed to.\nA model trained to predict hospital readmissions might learn that patients who receive intensive follow-up care are readmitted less often. Does intensive follow-up cause lower readmission, or are patients receiving intensive follow-up the ones who would have done well anyway? The prediction model cannot tell you. It has absorbed both the causal effect and the selection effect into a single number.\nCausal machine learning attempts to answer Rung 2 questions using the tools from both causal inference (Part II) and machine learning (Chapters 11–12).",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Causal Machine Learning</span>"
+    ]
+  },
+  {
+    "objectID": "13-causal-ml.html#double-machine-learning",
+    "href": "13-causal-ml.html#double-machine-learning",
+    "title": "13  Causal Machine Learning",
+    "section": "13.2 Double Machine Learning",
+    "text": "13.2 Double Machine Learning\nDouble Machine Learning (Chernozhukov et al., 2018) is an elegant approach to estimating a treatment effect when both the treatment and the outcome depend on high-dimensional covariates.\nThe key insight: if you want to measure the effect of \\(T\\) on \\(Y\\) after accounting for controls \\(X\\), run two ML models:\n\nPredict \\(T\\) from \\(X\\) → get residuals \\(\\tilde{T} = T - \\hat{T}(X)\\)\nPredict \\(Y\\) from \\(X\\) → get residuals \\(\\tilde{Y} = Y - \\hat{Y}(X)\\)\nRegress \\(\\tilde{Y}\\) on \\(\\tilde{T}\\) → the coefficient is the causal effect estimate\n\nBy using residuals — the parts of \\(T\\) and \\(Y\\) that the controls cannot explain — you remove the confounding influence of \\(X\\). The treatment effect estimate is asymptotically normal and valid under weak assumptions on the ML models.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Causal Machine Learning</span>"
+    ]
+  },
+  {
+    "objectID": "13-causal-ml.html#causal-forests",
+    "href": "13-causal-ml.html#causal-forests",
+    "title": "13  Causal Machine Learning",
+    "section": "13.3 Causal Forests",
+    "text": "13.3 Causal Forests\nA causal forest (Wager and Athey, 2018) estimates heterogeneous treatment effects: not a single average effect, but how the effect varies across individuals.\nStandard random forests estimate \\(\\mathbb{E}[Y \\mid X]\\). Causal forests estimate \\(\\tau(x) = \\mathbb{E}[Y(1) - Y(0) \\mid X = x]\\) — the expected treatment effect for an individual with characteristics \\(x\\).\nThe construction borrows random forest’s splitting procedure but uses a criterion designed to maximize heterogeneity in treatment effects across leaves, rather than minimizing prediction error.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\n\n# Simulate observational data with a confounder\nrng = np.random.default_rng(42)\nn = 500\n\nage    = rng.uniform(20, 70, n)\n# Treatment assignment influenced by age (older → more likely treated)\ntreat_prob = 1 / (1 + np.exp(-(age - 45) / 10))\nT = rng.binomial(1, treat_prob, n).astype(float)\n# Outcome: treatment has true effect of 3; age also affects outcome\nY = 3 * T + 0.1 * age + rng.normal(0, 1, n)\n\n# Naive estimate (ignores confounder)\nnaive_ate = Y[T == 1].mean() - Y[T == 0].mean()\n\n# Adjusted estimate: regress Y on T and age, read off T coefficient\nfrom numpy.linalg import lstsq\ndesign = np.column_stack([T, age, np.ones(n)])\ncoefs, _, _, _ = lstsq(design, Y, rcond=None)\nadjusted_ate = coefs[0]\n\nprint(f\"True ATE:     3.00\")\nprint(f\"Naive ATE:    {naive_ate:.3f}  (biased by confounder)\")\nprint(f\"Adjusted ATE: {adjusted_ate:.3f}  (controls for age)\")\n\n# Visualize\nlabels = [\"True ATE\", \"Naive estimate\\n(no adjustment)\", \"Adjusted estimate\\n(controls for age)\"]\nvalues = [3.0, naive_ate, adjusted_ate]\ncolors = [\"#59a14f\", \"#e15759\", \"#4e79a7\"]\n\nfig, ax = plt.subplots(figsize=(7, 4))\nbars = ax.bar(labels, values, color=colors, width=0.5)\nax.axhline(3.0, linestyle=\"--\", color=\"#59a14f\", linewidth=1.5, alpha=0.7)\nax.set_ylabel(\"Estimated treatment effect\")\nax.set_title(\"Confounder adjustment recovers the true causal effect\")\nfor bar, val in zip(bars, values):\n    ax.text(bar.get_x() + bar.get_width()/2, val + 0.05, f\"{val:.2f}\",\n            ha='center', fontsize=10)\nplt.tight_layout()\nplt.show()\n\n\nTrue ATE:     3.00\nNaive ATE:    4.554  (biased by confounder)\nAdjusted ATE: 2.936  (controls for age)\n\n\n\n\n\n\n\n\nFigure 13.1: Estimated vs. true average treatment effect using DoWhy on simulated observational data with a measured confounder.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Causal Machine Learning</span>"
+    ]
+  },
+  {
+    "objectID": "13-causal-ml.html#summary",
+    "href": "13-causal-ml.html#summary",
+    "title": "13  Causal Machine Learning",
+    "section": "13.4 Summary",
+    "text": "13.4 Summary\n\nStandard ML models optimized for prediction conflate causal effects with selection effects; they cannot answer interventional questions without additional structure.\nDouble Machine Learning removes the influence of high-dimensional controls from both treatment and outcome before estimating the causal effect, yielding a consistent and asymptotically normal estimator.\nCausal forests extend random forests to estimate heterogeneous treatment effects — how the effect of an intervention varies across individuals.\nThe causal inference framework (DAGs, backdoor criterion, structural models) provides the foundations for all causal ML methods.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Causal Machine Learning</span>"
+    ]
+  },
+  {
+    "objectID": "13-causal-ml.html#further-reading",
+    "href": "13-causal-ml.html#further-reading",
+    "title": "13  Causal Machine Learning",
+    "section": "13.5 Further Reading",
+    "text": "13.5 Further Reading\nThe DoWhy library documentation includes worked examples for each estimation method. Chernozhukov et al. (2018), Double/Debiased Machine Learning for Treatment and Structural Parameters, is the DML reference. Wager and Athey (2018), Estimation and Inference of Heterogeneous Treatment Effects, covers causal forests.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>13</span>  <span class='chapter-title'>Causal Machine Learning</span>"
+    ]
+  },
+  {
+    "objectID": "14-reinforcement-learning.html",
+    "href": "14-reinforcement-learning.html",
+    "title": "14  Reinforcement Learning",
+    "section": "",
+    "text": "14.1 Learning by Doing\nAll of the learning frameworks we have seen so far are passive: the learner receives data and updates its beliefs or its model parameters. The data is simply there, handed over.\nReinforcement learning is different. The agent exists in an environment. It takes actions. Those actions change the environment’s state. The environment responds with a reward signal — positive for good outcomes, negative for bad ones. The agent’s goal is to learn a policy: a mapping from states to actions that maximizes the expected cumulative reward over time.\nThis is the learning structure most recognizable from biology. A rat in a maze learns not from a textbook but from running the maze, getting cheese, finding dead ends, and gradually building a map of what works. A child learns to walk through exactly this process — try, fall, try again, receive the reward of not falling.\nWhat makes reinforcement learning computationally interesting is the credit assignment problem: if an agent receives a reward after a long sequence of actions, which of those actions was responsible for it? The action taken three steps ago may have been the critical one, not the last action.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Reinforcement Learning</span>"
+    ]
+  },
+  {
+    "objectID": "14-reinforcement-learning.html#markov-decision-processes",
+    "href": "14-reinforcement-learning.html#markov-decision-processes",
+    "title": "14  Reinforcement Learning",
+    "section": "14.2 Markov Decision Processes",
+    "text": "14.2 Markov Decision Processes\nA Markov Decision Process (MDP) is the formal framework for RL problems:\n\n\\(\\mathcal{S}\\): set of states\n\\(\\mathcal{A}\\): set of actions\n\\(P(s' \\mid s, a)\\): transition probability — given state \\(s\\) and action \\(a\\), what is the probability of landing in state \\(s'\\)?\n\\(R(s, a, s')\\): reward received when transitioning from \\(s\\) to \\(s'\\) via action \\(a\\)\n\\(\\gamma \\in [0, 1)\\): discount factor — future rewards are worth less than immediate rewards\n\nThe agent’s goal is to find a policy \\(\\pi(a \\mid s)\\) that maximizes the expected discounted return:\n\\[G_t = \\sum_{k=0}^{\\infty} \\gamma^k R_{t+k+1} \\tag{14.1}\\]",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Reinforcement Learning</span>"
+    ]
+  },
+  {
+    "objectID": "14-reinforcement-learning.html#q-learning",
+    "href": "14-reinforcement-learning.html#q-learning",
+    "title": "14  Reinforcement Learning",
+    "section": "14.3 Q-Learning",
+    "text": "14.3 Q-Learning\nQ-learning (Watkins, 1989) is a model-free algorithm: the agent does not need to know the transition probabilities \\(P(s' \\mid s, a)\\). Instead, it learns a Q-function: the expected cumulative reward from taking action \\(a\\) in state \\(s\\) and then following the optimal policy thereafter.\nThe Q-function is updated from experience using the Bellman equation:\n\\[Q(s, a) \\leftarrow Q(s, a) + \\alpha \\left[ r + \\gamma \\max_{a'} Q(s', a') - Q(s, a) \\right] \\tag{14.2}\\]\nThe term in brackets is the temporal difference error — the difference between the estimated value and the new estimate based on the observed reward and the next state’s value. With enough experience, \\(Q\\) converges to the optimal Q-function, and the optimal policy is simply to always take the action with the highest Q-value.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport matplotlib.patches as mpatches\n\n# 5x5 grid world\n# States: (row, col) flattened to index\n# Actions: 0=up, 1=down, 2=left, 3=right\nGRID = 5\nGOAL = (4, 4)\nOBSTACLE = (2, 2)\nSTART = (0, 0)\n\ndef state_idx(r, c): return r * GRID + c\n\ndef step(state, action):\n    r, c = divmod(state, GRID)\n    dr, dc = [(-1,0),(1,0),(0,-1),(0,1)][action]\n    nr, nc = max(0, min(GRID-1, r+dr)), max(0, min(GRID-1, c+dc))\n    if (nr, nc) == OBSTACLE:\n        nr, nc = r, c  # blocked\n    next_state = state_idx(nr, nc)\n    reward = 10.0 if (nr, nc) == GOAL else -0.1\n    done = (nr, nc) == GOAL\n    return next_state, reward, done\n\nrng = np.random.default_rng(0)\nQ = np.zeros((GRID*GRID, 4))\nalpha, gamma, episodes = 0.1, 0.95, 3000\nepsilon = 0.3\n\nfor ep in range(episodes):\n    s = state_idx(*START)\n    for _ in range(200):\n        if rng.random() &lt; epsilon:\n            a = rng.integers(4)\n        else:\n            a = int(np.argmax(Q[s]))\n        ns, r, done = step(s, a)\n        Q[s, a] += alpha * (r + gamma * np.max(Q[ns]) - Q[s, a])\n        s = ns\n        if done:\n            break\n    epsilon = max(0.05, epsilon * 0.999)\n\n# Extract greedy policy\npolicy_arrows = {0: '↑', 1: '↓', 2: '←', 3: '→'}\ngrid_policy = np.argmax(Q, axis=1).reshape(GRID, GRID)\n\nfig, ax = plt.subplots(figsize=(6, 6))\nvalue_grid = np.max(Q, axis=1).reshape(GRID, GRID)\nim = ax.imshow(value_grid, cmap='YlGn', vmin=0)\nplt.colorbar(im, ax=ax, fraction=0.04, label=\"Max Q-value\")\n\nfor r in range(GRID):\n    for c in range(GRID):\n        if (r, c) == GOAL:\n            ax.text(c, r, 'GOAL', ha='center', va='center', fontsize=9, fontweight='bold', color='green')\n        elif (r, c) == OBSTACLE:\n            ax.add_patch(mpatches.Rectangle((c-0.5, r-0.5), 1, 1, color='gray'))\n            ax.text(c, r, 'WALL', ha='center', va='center', fontsize=8, color='white')\n        elif (r, c) == START:\n            ax.text(c, r, 'S', ha='center', va='center', fontsize=10, fontweight='bold', color='blue')\n        else:\n            ax.text(c, r, policy_arrows[grid_policy[r, c]],\n                    ha='center', va='center', fontsize=16)\n\nax.set_title(\"Q-learning: learned policy (arrows) and Q-values (color)\")\nax.set_xticks(range(GRID)); ax.set_yticks(range(GRID))\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 14.1: Q-learning on a 5×5 grid world. The agent learns to navigate from start (top-left) to goal (bottom-right) while avoiding the obstacle.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Reinforcement Learning</span>"
+    ]
+  },
+  {
+    "objectID": "14-reinforcement-learning.html#summary",
+    "href": "14-reinforcement-learning.html#summary",
+    "title": "14  Reinforcement Learning",
+    "section": "14.4 Summary",
+    "text": "14.4 Summary\n\nReinforcement learning is the framework for learning through interaction: an agent takes actions, receives rewards, and learns a policy that maximizes cumulative reward.\nA Markov Decision Process formalizes the RL problem with states, actions, transition probabilities, rewards, and a discount factor.\nQ-learning learns the optimal action-value function from experience without needing a model of the environment.\nThe credit assignment problem — attributing rewards to past actions — is solved through bootstrapped updates using the Bellman equation.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Reinforcement Learning</span>"
+    ]
+  },
+  {
+    "objectID": "14-reinforcement-learning.html#further-reading",
+    "href": "14-reinforcement-learning.html#further-reading",
+    "title": "14  Reinforcement Learning",
+    "section": "14.5 Further Reading",
+    "text": "14.5 Further Reading\nSutton and Barto (2018) is the definitive textbook, available free online. Chapters 1–6 cover tabular RL methods including Q-learning. For the connection between RL and neuroscience, Dayan and Niv (2008), Reinforcement learning: The Good, The Bad and The Ugly, is an excellent survey.\n\n\n\n\n\n\nSutton, Richard S., and Andrew G. Barto. 2018. Reinforcement Learning: An Introduction. 2nd ed. MIT Press.",
+    "crumbs": [
+      "Part IV: Advanced Learning Algorithms",
+      "<span class='chapter-number'>14</span>  <span class='chapter-title'>Reinforcement Learning</span>"
+    ]
+  },
+  {
+    "objectID": "15-bayesian-brain.html",
+    "href": "15-bayesian-brain.html",
+    "title": "15  The Bayesian Brain",
+    "section": "",
+    "text": "15.1 The Brain as a Prediction Machine\nThere is a counterintuitive idea at the heart of modern computational neuroscience: the brain is not primarily a device for processing sensory information. It is primarily a device for generating predictions about sensory information, and only incidentally interested in the cases where those predictions are wrong.\nThis view — predictive processing, or the predictive coding hypothesis — inverts the traditional picture. In the traditional view, sensory signals flow upward from retina to cortex, being progressively enriched and classified until we perceive the world. In the predictive processing view, the brain is constantly generating a top-down model of the world, propagating its predictions downward, and only passing prediction errors — the discrepancy between prediction and reality — upward.\nThe evolutionary logic is appealing. The brain is metabolically expensive. Predicting what will happen and silencing the expected allows it to focus resources on the unexpected — which is, after all, what actually matters.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>The Bayesian Brain</span>"
+    ]
+  },
+  {
+    "objectID": "15-bayesian-brain.html#perception-as-bayesian-inference",
+    "href": "15-bayesian-brain.html#perception-as-bayesian-inference",
+    "title": "15  The Bayesian Brain",
+    "section": "15.2 Perception as Bayesian Inference",
+    "text": "15.2 Perception as Bayesian Inference\nThe predictive processing framework maps directly onto Bayesian inference. The brain’s top-down model is a prior. The sensory evidence is a likelihood. Perception is the posterior — the brain’s best guess about the state of the world given its priors and the sensory data.\nThis is not merely a metaphor. The mathematical framework of Bayesian inference correctly predicts many perceptual phenomena:\n\nMultisensory integration. When vision and proprioception give conflicting estimates of hand position, the brain combines them in proportion to their reliability — precisely the Bayesian optimal weighting.\nPerceptual illusions. Many illusions arise from the brain’s prior being strong enough to override sensory evidence. The checker-shadow illusion: context tells the brain a square is in shadow, so it interprets it as lighter than it is, even when the pixel values are identical.\nHallucinations. If prediction errors are suppressed (as may occur in psychosis or under certain drugs), the brain’s prior takes over and generates experience without sensory grounding.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>The Bayesian Brain</span>"
+    ]
+  },
+  {
+    "objectID": "15-bayesian-brain.html#the-free-energy-principle",
+    "href": "15-bayesian-brain.html#the-free-energy-principle",
+    "title": "15  The Bayesian Brain",
+    "section": "15.3 The Free Energy Principle",
+    "text": "15.3 The Free Energy Principle\nKarl Friston’s free energy principle attempts to unify perception and action under a single imperative: minimize surprise — the long-run improbability of sensory observations under the agent’s internal model.\nSince surprise is intractable to compute directly, the brain minimizes a tractable bound called free energy — which equals surprise plus the divergence between the agent’s approximate beliefs and its true posterior. There are two ways to minimize free energy: update your internal model to match sensory observations (perception), or act on the world to bring observations in line with your predictions (action).\nThis framing makes action and perception two sides of the same coin, unified under a single objective.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nrng = np.random.default_rng(1)\n\n# Generative model: signal = slow sinusoid\nt = np.linspace(0, 6 * np.pi, 100)\ntrue_signal = np.sin(t) + 0.3 * np.sin(3 * t)\nnoisy_obs = true_signal + rng.normal(0, 0.4, len(t))\n\n# Predictive coding: initialize with flat prediction, update via prediction error\nprediction = np.zeros(len(t))\nlearning_rate = 0.3\n\npredictions_over_time = []\nerrors_over_time = []\n\npred = 0.0\nfor i in range(len(t)):\n    pred_error = noisy_obs[i] - pred\n    pred += learning_rate * pred_error\n    predictions_over_time.append(pred)\n    errors_over_time.append(abs(pred_error))\n\nfig, axes = plt.subplots(2, 1, figsize=(10, 6))\n\naxes[0].plot(t, true_signal, 'k-', label='True signal', alpha=0.5, linewidth=1)\naxes[0].plot(t, noisy_obs, '.', color='gray', markersize=3, label='Noisy observation', alpha=0.6)\naxes[0].plot(t, predictions_over_time, color='#4e79a7', linewidth=2, label='Brain prediction')\naxes[0].set_ylabel(\"Value\")\naxes[0].set_title(\"Predictive coding: tracking a signal through prediction error\")\naxes[0].legend(fontsize=9)\n\naxes[1].plot(t, errors_over_time, color='#e15759', linewidth=1.5)\naxes[1].set_ylabel(\"|Prediction error|\")\naxes[1].set_xlabel(\"Time\")\naxes[1].set_title(\"Prediction error decreases as model adapts\")\n\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 15.1: Simple predictive coding: the model updates its prediction to minimize prediction error across 30 time steps.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>The Bayesian Brain</span>"
+    ]
+  },
+  {
+    "objectID": "15-bayesian-brain.html#summary",
+    "href": "15-bayesian-brain.html#summary",
+    "title": "15  The Bayesian Brain",
+    "section": "15.4 Summary",
+    "text": "15.4 Summary\n\nThe predictive processing hypothesis proposes that the brain is primarily a prediction machine: it generates top-down predictions and propagates only prediction errors upward.\nPerception is formally equivalent to Bayesian inference: the brain’s internal model is the prior, sensory evidence provides the likelihood, and the perceived world is the posterior.\nThe free energy principle unifies perception and action: both serve to minimize surprise (the long-run improbability of experience).\nPerceptual illusions, multisensory integration, and hallucinations are all naturally explained within the Bayesian brain framework.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>The Bayesian Brain</span>"
+    ]
+  },
+  {
+    "objectID": "15-bayesian-brain.html#further-reading",
+    "href": "15-bayesian-brain.html#further-reading",
+    "title": "15  The Bayesian Brain",
+    "section": "15.5 Further Reading",
+    "text": "15.5 Further Reading\nFriston (2010) is the foundational paper. Andy Clark’s Surfing Uncertainty (2015) is the accessible book-length treatment of predictive processing. For the multisensory integration evidence, Ernst and Banks (2002), Humans integrate visual and haptic information in a statistically optimal fashion (Nature), is a landmark experimental result.\n\n\n\n\n\n\nFriston, Karl. 2010. The Free-Energy Principle: A Unified Brain Theory? In Nature Reviews Neuroscience, vol. 11.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>15</span>  <span class='chapter-title'>The Bayesian Brain</span>"
+    ]
+  },
+  {
+    "objectID": "16-human-causal-reasoning.html",
+    "href": "16-human-causal-reasoning.html",
+    "title": "16  Human Causal Reasoning",
+    "section": "",
+    "text": "16.1 Causal Schemas and Intuitive Theories\nHuman beings are compulsive causal theorists. We do not simply observe that events co-occur; we construct explanations for why they do. An infant who bats a mobile and watches it swing quickly learns that batting causes swinging — not merely that batting and swinging happen around the same time.\nThis drive to build causal models is so fundamental that psychologists call it the intentionality bias: humans routinely attribute causes even to inanimate objects. A triangle chasing a circle in a two-second animation reliably prompts people to describe the triangle as “bullying” the circle, or the circle as “escaping.” We cannot help but see causation.\nThis is not irrational. Causal models are compressive: a rich description of a mechanism can predict infinitely many future observations. An organism that learns causal structure, rather than merely recording co-occurrences, has an enormous advantage in navigating the world.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Human Causal Reasoning</span>"
+    ]
+  },
+  {
+    "objectID": "16-human-causal-reasoning.html#where-human-causal-reasoning-goes-wrong",
+    "href": "16-human-causal-reasoning.html#where-human-causal-reasoning-goes-wrong",
+    "title": "16  Human Causal Reasoning",
+    "section": "16.2 Where Human Causal Reasoning Goes Wrong",
+    "text": "16.2 Where Human Causal Reasoning Goes Wrong\nBut human causal intuition is not a calibrated Bayesian inference machine. It is a collection of evolved heuristics, fast and usually good enough, but systematically wrong in predictable ways.\nCorrelation bias. People overestimate the causal significance of co-occurring events, especially vivid or memorable ones. Post hoc ergo propter hoc — “after this, therefore because of this” — is the formal name for this fallacy, and it is a deeply natural error.\nAvailability heuristic. Tversky and Kahneman (1974) showed that people judge causal probability by how easily an explanation comes to mind. Causes that generate vivid, easily imagined scenarios are rated as more probable than statistically more likely but less memorable alternatives.\nConfounding blindness. People are poor at identifying confounders spontaneously. Without prompting, most people do not ask “is there a third variable causing both?” They see correlation and infer causation.\nNeglect of base rates. When making causal judgments, people over-weight specific evidence and under-weight prior probabilities — a systematic violation of Bayes’ theorem.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Human Causal Reasoning</span>"
+    ]
+  },
+  {
+    "objectID": "16-human-causal-reasoning.html#children-and-causal-intervention",
+    "href": "16-human-causal-reasoning.html#children-and-causal-intervention",
+    "title": "16  Human Causal Reasoning",
+    "section": "16.3 Children and Causal Intervention",
+    "text": "16.3 Children and Causal Intervention\nAlison Gopnik and colleagues have shown that children as young as two or three can use intervention — a distinctly Rung 2 operation — to learn about causal structure. Presented with a novel device that lights up when certain blocks are placed on it, children quickly figure out which blocks are causally relevant through interventional testing, even when the statistical patterns are ambiguous.\nIn some respects, children are better causal learners than adults: less committed to existing theories, more willing to explore, more likely to test rather than observe.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\nfrom scipy.stats import pearsonr\n\nrng = np.random.default_rng(5)\nn = 500\n\n# True causal structure: Z → X, Z → Y (confounder)\n# No direct X → Y effect\nZ = rng.binomial(1, 0.5, n)\nX = rng.binomial(1, 0.7 * Z + 0.1, n)   # X influenced by Z\nY = rng.binomial(1, 0.7 * Z + 0.1, n)   # Y influenced by Z (not by X)\n\n# Spurious correlation between X and Y\nr_xy, p_xy = pearsonr(X, Y)\n\n# People tend to rate causal strength proportional to correlation\nco_occurrence_freq = (X & Y).mean()\nanti_correlation = (~X.astype(bool) & ~Y.astype(bool)).mean()\n\n# Normative: after conditioning on Z, correlation vanishes\nr_xy_given_z0 = pearsonr(X[Z==0], Y[Z==0])[0]\nr_xy_given_z1 = pearsonr(X[Z==1], Y[Z==1])[0]\n\nlabels = ['Overall r(X,Y)\\n(spurious)', 'r(X,Y) | Z=0\\n(no effect)', 'r(X,Y) | Z=1\\n(no effect)']\nvalues = [r_xy, r_xy_given_z0, r_xy_given_z1]\ncolors = ['#e15759', '#4e79a7', '#4e79a7']\n\nfig, ax = plt.subplots(figsize=(8, 4))\nbars = ax.bar(labels, values, color=colors, width=0.5)\nax.axhline(0, color='black', linewidth=0.8)\nax.set_ylabel(\"Pearson r\")\nax.set_title(\"The spurious correlation vanishes when we condition on the confounder Z\")\nfor bar, val in zip(bars, values):\n    ax.text(bar.get_x() + bar.get_width()/2,\n            val + 0.01 if val &gt;= 0 else val - 0.03,\n            f\"{val:.3f}\", ha='center', fontsize=10)\nplt.tight_layout()\nplt.show()\n\nprint(f\"Spurious correlation (unadjusted): r = {r_xy:.3f}, p = {p_xy:.4f}\")\nprint(f\"After conditioning on Z=0: r = {r_xy_given_z0:.3f}\")\nprint(f\"After conditioning on Z=1: r = {r_xy_given_z1:.3f}\")\n\n\n\n\n\n\n\n\nFigure 16.1: Simulating the correlation bias: human causal estimates follow co-occurrence frequency, not actual causal strength.\n\n\n\n\n\nSpurious correlation (unadjusted): r = 0.475, p = 0.0000\nAfter conditioning on Z=0: r = 0.035\nAfter conditioning on Z=1: r = -0.076",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Human Causal Reasoning</span>"
+    ]
+  },
+  {
+    "objectID": "16-human-causal-reasoning.html#summary",
+    "href": "16-human-causal-reasoning.html#summary",
+    "title": "16  Human Causal Reasoning",
+    "section": "16.4 Summary",
+    "text": "16.4 Summary\n\nHumans are compulsive causal reasoners — we construct causal models spontaneously and automatically, even for inanimate events.\nHuman causal intuition is a collection of fast heuristics that are usually useful but systematically biased: correlation bias, availability, confounding blindness, base-rate neglect.\nChildren use interventional testing to learn causal structure, demonstrating Rung 2 reasoning at an early age.\nThe normative standard for causal judgment is provided by the causal inference framework (Part II); departures from this standard are predictable and well-documented.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Human Causal Reasoning</span>"
+    ]
+  },
+  {
+    "objectID": "16-human-causal-reasoning.html#further-reading",
+    "href": "16-human-causal-reasoning.html#further-reading",
+    "title": "16  Human Causal Reasoning",
+    "section": "16.5 Further Reading",
+    "text": "16.5 Further Reading\nTversky and Kahneman (1974) is the foundational paper on heuristics and biases. Kahneman’s Thinking, Fast and Slow (2011) is the accessible book-length treatment. For the developmental work, Gopnik et al. (2004), A Theory of Causal Learning in Children, is the key reference.\n\n\n\n\n\n\nTversky, Amos, and Daniel Kahneman. 1974. Judgment Under Uncertainty: Heuristics and Biases. In Science, vol. 185.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>16</span>  <span class='chapter-title'>Human Causal Reasoning</span>"
+    ]
+  },
+  {
+    "objectID": "17-fuzzy-cognition.html",
+    "href": "17-fuzzy-cognition.html",
+    "title": "17  Fuzzy Cognition and Prototype Theory",
+    "section": "",
+    "text": "17.1 What Is a Bird?\nAsk someone to name a bird, and they will say “robin” or “sparrow” before they say “penguin” or “ostrich.” Both are birds. Both satisfy the biological definition. But the robin feels more like a bird.\nThis asymmetry — some instances of a category being better examples than others — is the empirical starting point for Eleanor Rosch’s prototype theory. In a series of experiments in the 1970s, Rosch documented that category membership is graded, not binary. People rate robins as more “birdy” than penguins, chairs as more “furniture-like” than telephones, apples as better examples of fruit than olives.\nCategories, Rosch concluded, are organized around prototypes: abstract representations of the most typical member. Membership is determined by similarity to the prototype, not by possession of a set of necessary and sufficient features.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Fuzzy Cognition and Prototype Theory</span>"
+    ]
+  },
+  {
+    "objectID": "17-fuzzy-cognition.html#the-classical-view-and-its-problems",
+    "href": "17-fuzzy-cognition.html#the-classical-view-and-its-problems",
+    "title": "17  Fuzzy Cognition and Prototype Theory",
+    "section": "17.2 The Classical View and Its Problems",
+    "text": "17.2 The Classical View and Its Problems\nThe classical view of concepts, dominant from Aristotle through much of the twentieth century, held that every concept corresponds to a definition: a set of necessary and sufficient features. A bachelor is an unmarried adult male. Everything that is a bachelor has all three features; everything lacking any one of them is not a bachelor.\nRosch’s work showed that most concepts — certainly all natural concepts, and most everyday artificial ones — do not behave this way. People cannot agree on the defining features of “game” (Wittgenstein had noticed this earlier). They disagree about edge cases. They show graded typicality effects. The classical view predicts none of this.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Fuzzy Cognition and Prototype Theory</span>"
+    ]
+  },
+  {
+    "objectID": "17-fuzzy-cognition.html#fuzzy-sets-and-prototype-theory",
+    "href": "17-fuzzy-cognition.html#fuzzy-sets-and-prototype-theory",
+    "title": "17  Fuzzy Cognition and Prototype Theory",
+    "section": "17.3 Fuzzy Sets and Prototype Theory",
+    "text": "17.3 Fuzzy Sets and Prototype Theory\nThe connection to fuzzy set theory is direct. If membership in a concept is graded, then the concept is a fuzzy set: its membership function assigns each possible member a degree of belonging between 0 and 1, where 1 is the prototype and 0 is complete non-membership.\nThe typicality rating that people assign to category members is, functionally, an estimate of the membership function. A robin has high membership in BIRD. A penguin has moderate membership. A bat has low but non-zero membership (it flies, and people sometimes mistakenly classify it as a bird).\nThis framing makes prototype theory mathematically precise. It also connects cognitive science directly to the fuzzy inference systems of Chapter 10 — the same mathematics underlies both the ventilation controller and the way a human brain decides whether a platypus is a mammal.\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\n\n# Features: [flies, sings, small, warm-blooded, has-feathers, lays-eggs]\n# Prototype bird: all features present\nprototype = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])\n\ncreatures = {\n    \"Robin\":       np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),\n    \"Sparrow\":     np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),\n    \"Eagle\":       np.array([1.0, 0.3, 0.2, 1.0, 1.0, 1.0]),\n    \"Penguin\":     np.array([0.0, 0.2, 0.3, 1.0, 1.0, 1.0]),\n    \"Ostrich\":     np.array([0.0, 0.1, 0.1, 1.0, 1.0, 1.0]),\n    \"Bat\":         np.array([1.0, 0.2, 0.5, 1.0, 0.0, 1.0]),\n    \"Butterfly\":   np.array([1.0, 0.0, 0.5, 0.0, 0.0, 0.0]),\n    \"Fish\":        np.array([0.0, 0.0, 0.3, 1.0, 0.0, 1.0]),\n}\n\n# Prototype membership = cosine similarity to prototype\ndef membership(features):\n    return np.dot(features, prototype) / (np.linalg.norm(features) * np.linalg.norm(prototype) + 1e-9)\n\n# Crisp rule: is_bird = flies AND warm-blooded AND has-feathers\ndef crisp_bird(features):\n    return float(features[0] &gt; 0.5 and features[3] &gt; 0.5 and features[4] &gt; 0.5)\n\nnames = list(creatures.keys())\nfuzzy = [membership(v) for v in creatures.values()]\ncrisp = [crisp_bird(v) for v in creatures.values()]\n\nx = np.arange(len(names))\nwidth = 0.35\n\nfig, ax = plt.subplots(figsize=(10, 4))\nax.bar(x - width/2, fuzzy, width, label='Prototype (fuzzy) membership', color='#4e79a7', alpha=0.85)\nax.bar(x + width/2, crisp, width, label='Crisp rule (flies + warm + feathers)', color='#e15759', alpha=0.85)\nax.set_xticks(x)\nax.set_xticklabels(names, rotation=30, ha='right')\nax.set_ylabel(\"Degree of membership in BIRD\")\nax.set_ylim(0, 1.15)\nax.set_title(\"Prototype vs. crisp classification: gradual vs. sharp boundaries\")\nax.legend()\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure 17.1: Prototype-based vs. crisp classification of ‘bird-like’ creatures. Prototypical birds (left) have high membership; atypical birds (right) trail off gradually.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Fuzzy Cognition and Prototype Theory</span>"
+    ]
+  },
+  {
+    "objectID": "17-fuzzy-cognition.html#summary",
+    "href": "17-fuzzy-cognition.html#summary",
+    "title": "17  Fuzzy Cognition and Prototype Theory",
+    "section": "17.4 Summary",
+    "text": "17.4 Summary\n\nPrototype theory holds that concepts are organized around typical examples (prototypes), not definitions; membership is graded, not binary.\nRosch’s experiments established that typicality ratings are stable, cross-cultural, and predict real cognitive effects (faster reaction times, higher agreement, better recall for typical members).\nFuzzy set theory provides the mathematical formalization of prototype theory: the typicality rating is the membership function value.\nCrisp rule-based systems and prototype-based systems make systematically different predictions for edge cases and atypical members — and human data consistently favors the graded view.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Fuzzy Cognition and Prototype Theory</span>"
+    ]
+  },
+  {
+    "objectID": "17-fuzzy-cognition.html#further-reading",
+    "href": "17-fuzzy-cognition.html#further-reading",
+    "title": "17  Fuzzy Cognition and Prototype Theory",
+    "section": "17.5 Further Reading",
+    "text": "17.5 Further Reading\nRosch (1978) is the foundational paper. Lakoff’s Women, Fire, and Dangerous Things (1987) extends prototype theory to linguistics and is one of the most thought-provoking books in cognitive science. For the connection to formal concept learning, Tenenbaum and Griffiths (2001), Generalization, Similarity, and Bayesian Inference, provides a Bayesian account of concept learning.\n\n\n\n\n\n\nRosch, Eleanor. 1978. Principles of Categorization. Edited by Eleanor Rosch and Barbara B. Lloyd. Lawrence Erlbaum.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>17</span>  <span class='chapter-title'>Fuzzy Cognition and Prototype Theory</span>"
+    ]
+  },
+  {
+    "objectID": "18-what-machines-cannot-learn.html",
+    "href": "18-what-machines-cannot-learn.html",
+    "title": "18  What Machines Can and Cannot Learn",
+    "section": "",
+    "text": "18.1 The Unimpressed Statistician\nThere is a pattern in the history of artificial intelligence that repeats with uncomfortable regularity. A system learns to perform a task at superhuman levels — playing chess, recognizing faces, translating text — and the announcement of its achievement arrives in breathless language: the machine understands, the machine knows, the machine thinks. Then a researcher finds a case where the system fails catastrophically on what any child would find trivial, and the breathlessness subsides.\nA face recognition system trained on millions of photographs fails to recognize the same face when the lighting changes. A language model that can write a convincing legal brief confidently asserts that Abraham Lincoln was the 35th president. An image classifier that correctly labels a thousand dogs misclassifies a picture of a dog wearing a party hat.\nThese failures are not random noise. They reveal a structural difference between what these systems have learned and what we mean, intuitively, by understanding.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>What Machines Can and Cannot Learn</span>"
+    ]
+  },
+  {
+    "objectID": "18-what-machines-cannot-learn.html#the-symbol-grounding-problem",
+    "href": "18-what-machines-cannot-learn.html#the-symbol-grounding-problem",
+    "title": "18  What Machines Can and Cannot Learn",
+    "section": "18.2 The Symbol Grounding Problem",
+    "text": "18.2 The Symbol Grounding Problem\nIn 1990, the philosopher and cognitive scientist Stevan Harnad posed what he called the symbol grounding problem. A Chinese Room (Searle’s famous thought experiment) processes Chinese symbols by looking up transformation rules in a rulebook. The output may be indistinguishable from that of a Chinese speaker, but the symbols have no meaning to the system — they are manipulated without any connection to the things they represent.\nLanguage models face a version of this problem. They learn statistical patterns over tokens — over words and subwords in text. The tokens acquire meaning within the model through their statistical relationships to other tokens. But the connection between the token dog and the actual sensation of a dog — the texture of fur, the smell, the weight of a head on your lap — is nowhere in the training data.\nHuman concepts are grounded. They are connected, through embodied experience, to the world they refer to. Machine concepts are relational: they know how symbols relate to other symbols, but not what any of them feel like.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>What Machines Can and Cannot Learn</span>"
+    ]
+  },
+  {
+    "objectID": "18-what-machines-cannot-learn.html#common-sense-and-open-worlds",
+    "href": "18-what-machines-cannot-learn.html#common-sense-and-open-worlds",
+    "title": "18  What Machines Can and Cannot Learn",
+    "section": "18.3 Common Sense and Open Worlds",
+    "text": "18.3 Common Sense and Open Worlds\nCommon sense knowledge is the hardest kind to encode, because it is largely implicit. People know that:\n\nObjects fall when unsupported\nOther people have goals and beliefs\nTime flows in one direction\nA glass of water remains a glass of water when you turn your back\nPromises create obligations\n\nNone of this appears in a typical training corpus as a stated proposition. It is background structure, assumed by every sentence and never explicitly stated, because every reader already knows it.\nCurrent AI systems struggle with common sense precisely because it is never explicitly articulated — it is infrastructure, not content.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>What Machines Can and Cannot Learn</span>"
+    ]
+  },
+  {
+    "objectID": "18-what-machines-cannot-learn.html#causality-as-the-missing-ingredient",
+    "href": "18-what-machines-cannot-learn.html#causality-as-the-missing-ingredient",
+    "title": "18  What Machines Can and Cannot Learn",
+    "section": "18.4 Causality as the Missing Ingredient",
+    "text": "18.4 Causality as the Missing Ingredient\nPearl’s observation is pointed: current AI systems, however capable, are fundamentally Rung 1 machines. They are extraordinarily good at detecting and exploiting patterns in data. They can generalize these patterns to new examples with striking reliability. But they do not — and in their current form, cannot — answer questions about what would happen if something changed.\nThis is not merely a benchmark failure. It is a structural feature. A system trained to predict outcomes from observational data has no way to distinguish an effect from a confounder, a cause from a symptom. It cannot reason about interventions it has never seen, because interventions are not in the observational distribution.\nThe path forward likely involves augmenting statistical learning with causal structure — either learned from data (causal discovery), injected by domain experts (structural models), or inferred through active interaction with the world (the way infants learn it).",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>What Machines Can and Cannot Learn</span>"
+    ]
+  },
+  {
+    "objectID": "18-what-machines-cannot-learn.html#what-this-reveals-about-human-intelligence",
+    "href": "18-what-machines-cannot-learn.html#what-this-reveals-about-human-intelligence",
+    "title": "18  What Machines Can and Cannot Learn",
+    "section": "18.5 What This Reveals About Human Intelligence",
+    "text": "18.5 What This Reveals About Human Intelligence\nThe comparison is instructive in both directions. The things machines do easily — processing millions of examples, detecting subtle statistical regularities, retaining exact records — are things humans do poorly. The things humans do effortlessly — reasoning about unseen interventions, learning from a single example, understanding novel situations through analogy — are precisely what machines find hardest.\nThis asymmetry suggests that human intelligence is not simply a slower, noisier version of what machine learning does at scale. It may be organized around fundamentally different principles: causal models, embodied grounding, analogical reasoning, and the kind of flexible, open-ended cognition that Rung 3 counterfactual thinking requires.\nWhether machines will eventually acquire these properties is an open question. What is clear is that the question is worth asking — and that understanding the architecture of human intelligence is inseparable from understanding what current AI systems lack.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>What Machines Can and Cannot Learn</span>"
+    ]
+  },
+  {
+    "objectID": "18-what-machines-cannot-learn.html#summary",
+    "href": "18-what-machines-cannot-learn.html#summary",
+    "title": "18  What Machines Can and Cannot Learn",
+    "section": "18.6 Summary",
+    "text": "18.6 Summary\n\nRepeated AI systems exhibit a pattern of impressive performance followed by categorical failure on tasks humans find trivial — revealing a structural gap between pattern-matching and understanding.\nThe symbol grounding problem identifies the missing link: machine symbols are related to other symbols, but not grounded in embodied experience the way human concepts are.\nCommon sense knowledge is implicit infrastructure — never stated, always assumed — which makes it extraordinarily difficult to encode in a system that learns from explicit text.\nCausality is the structural missing ingredient: current AI systems are Rung 1 pattern-matchers that cannot reason about interventions or counterfactuals.\nThe contrast between human and machine intelligence illuminates both: each is structured around different strengths and organized around different principles.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>What Machines Can and Cannot Learn</span>"
+    ]
+  },
+  {
+    "objectID": "18-what-machines-cannot-learn.html#further-reading",
+    "href": "18-what-machines-cannot-learn.html#further-reading",
+    "title": "18  What Machines Can and Cannot Learn",
+    "section": "18.7 Further Reading",
+    "text": "18.7 Further Reading\nPearl’s critique of current AI can be found in Pearl and Mackenzie (2018), Chapter 1. Dreyfus’s What Computers Can’t Do (1972, revised 1979) anticipated many of these limitations decades before deep learning existed — and remains startlingly relevant. For the common sense problem specifically, Davis and Marcus (2015), Commonsense Reasoning and Commonsense Knowledge in Artificial Intelligence, is the standard survey.\n\n\n\n\n\n\nPearl, Judea, and Dana Mackenzie. 2018. The Book of Why: The New Science of Cause and Effect. Basic Books.",
+    "crumbs": [
+      "Part V: Cognition and the Learning Machine",
+      "<span class='chapter-number'>18</span>  <span class='chapter-title'>What Machines Can and Cannot Learn</span>"
+    ]
+  },
+  {
+    "objectID": "references.html",
+    "href": "references.html",
+    "title": "References",
+    "section": "",
+    "text": "Friston, Karl. 2010. The Free-Energy Principle: A Unified Brain\nTheory? In Nature Reviews Neuroscience, vol. 11.\n\n\nGelman, Andrew, John B. Carlin, Hal S. Stern, David B. Dunson, Aki\nVehtari, and Donald B. Rubin. 2013. Bayesian Data Analysis. 3rd\ned. CRC Press.\n\n\nGoodfellow, Ian, Yoshua Bengio, and Aaron Courville. 2016. Deep\nLearning. MIT Press.\n\n\nImbens, Guido W., and Donald B. Rubin. 2015. Causal Inference for\nStatistics, Social, and Biomedical Sciences. Cambridge University\nPress.\n\n\nJaynes, Edwin T. 2003. Probability Theory: The Logic of\nScience. Cambridge University Press.\n\n\nKosko, Bart. 1993. Fuzzy Thinking: The New Science of Fuzzy\nLogic. Hyperion.\n\n\nPearl, Judea. 2009. Causality: Models, Reasoning, and\nInference. 2nd ed. Cambridge University Press.\n\n\nPearl, Judea, and Dana Mackenzie. 2018. The Book of Why: The New\nScience of Cause and Effect. Basic Books.\n\n\nRosch, Eleanor. 1978. Principles of Categorization. Edited by\nEleanor Rosch and Barbara B. Lloyd. Lawrence Erlbaum.\n\n\nSutton, Richard S., and Andrew G. Barto. 2018. Reinforcement\nLearning: An Introduction. 2nd ed. MIT Press.\n\n\nTversky, Amos, and Daniel Kahneman. 1974. Judgment Under\nUncertainty: Heuristics and Biases. In Science, vol. 185.\n\n\nZadeh, Lotfi A. 1965. Fuzzy Sets. In Information and\nControl, vol. 8.",
+    "crumbs": [
+      "References"
+    ]
+  },
+  {
+    "objectID": "appendix-a-math.html",
+    "href": "appendix-a-math.html",
+    "title": "Appendix A — Mathematical Prerequisites",
+    "section": "",
+    "text": "Probability Theory\nThis appendix collects the mathematical background assumed throughout the book. Readers with a strong quantitative background can skip it. Those encountering some topics for the first time may find it useful to work through the relevant sections before or alongside the corresponding chapters.\nRandom variables. A random variable \\(X\\) is a function from a sample space to the real numbers. Its distribution describes the probability of each possible value.\nExpectation. The expected value \\(\\mathbb{E}[X] = \\sum_x x \\cdot P(X = x)\\) (discrete) or \\(\\int x \\cdot f(x) \\, dx\\) (continuous).\nVariance. \\(\\text{Var}(X) = \\mathbb{E}[(X - \\mathbb{E}[X])^2] = \\mathbb{E}[X^2] - (\\mathbb{E}[X])^2\\).\nConditional independence. \\(X \\perp Y \\mid Z\\) means that, given \\(Z\\), knowing \\(X\\) provides no additional information about \\(Y\\): \\(P(X \\mid Y, Z) = P(X \\mid Z)\\).\nBayes’ theorem. \\(P(H \\mid D) = P(D \\mid H) P(H) / P(D)\\).\nCommon distributions used in this book:",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Mathematical Prerequisites</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-a-math.html#probability-theory",
+    "href": "appendix-a-math.html#probability-theory",
+    "title": "Appendix A — Mathematical Prerequisites",
+    "section": "",
+    "text": "Distribution\nParameters\nSupport\nMain use\n\n\n\n\nBernoulli\n\\(p\\)\n\\(\\{0, 1\\}\\)\nBinary outcomes\n\n\nBinomial\n\\(n, p\\)\n\\(\\{0, \\ldots, n\\}\\)\nCount of successes\n\n\nBeta\n\\(\\alpha, \\beta\\)\n\\([0, 1]\\)\nPrior on probabilities\n\n\nNormal\n\\(\\mu, \\sigma^2\\)\n\\(\\mathbb{R}\\)\nContinuous data, errors\n\n\nGamma\n\\(\\alpha, \\beta\\)\n\\((0, \\infty)\\)\nPositive quantities, rates\n\n\nPoisson\n\\(\\lambda\\)\n\\(\\{0, 1, 2, \\ldots\\}\\)\nCount data",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Mathematical Prerequisites</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-a-math.html#linear-algebra-basics",
+    "href": "appendix-a-math.html#linear-algebra-basics",
+    "title": "Appendix A — Mathematical Prerequisites",
+    "section": "Linear Algebra Basics",
+    "text": "Linear Algebra Basics\nVectors. A column vector \\(\\mathbf{x} \\in \\mathbb{R}^n\\) is a list of \\(n\\) numbers.\nDot product. \\(\\mathbf{a} \\cdot \\mathbf{b} = \\sum_i a_i b_i\\). Geometrically, \\(\\mathbf{a} \\cdot \\mathbf{b} = \\|\\mathbf{a}\\| \\|\\mathbf{b}\\| \\cos\\theta\\).\nMatrix multiplication. \\((AB)_{ij} = \\sum_k A_{ik} B_{kj}\\).\nTranspose. \\((A^T)_{ij} = A_{ji}\\).\nThe notation \\(\\mathbf{w}^T \\mathbf{x}\\) denotes the dot product of two column vectors — used throughout for linear models.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Mathematical Prerequisites</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-a-math.html#calculus-notation",
+    "href": "appendix-a-math.html#calculus-notation",
+    "title": "Appendix A — Mathematical Prerequisites",
+    "section": "Calculus Notation",
+    "text": "Calculus Notation\nDerivative. \\(f'(x) = \\frac{df}{dx}\\): rate of change of \\(f\\) with respect to \\(x\\).\nPartial derivative. \\(\\frac{\\partial f}{\\partial x_i}\\): rate of change of \\(f\\) with respect to \\(x_i\\), holding all other variables constant.\nGradient. \\(\\nabla_\\theta f = \\left(\\frac{\\partial f}{\\partial \\theta_1}, \\ldots, \\frac{\\partial f}{\\partial \\theta_n}\\right)^T\\): vector of all partial derivatives.\nChain rule. If \\(z = f(g(x))\\), then \\(\\frac{dz}{dx} = \\frac{dz}{dg} \\cdot \\frac{dg}{dx}\\). This is the backbone of backpropagation.\nIntegral. \\(\\int_a^b f(x) \\, dx\\): area under the curve \\(f\\) from \\(a\\) to \\(b\\).",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Mathematical Prerequisites</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-a-math.html#information-theory",
+    "href": "appendix-a-math.html#information-theory",
+    "title": "Appendix A — Mathematical Prerequisites",
+    "section": "Information Theory",
+    "text": "Information Theory\nEntropy. The entropy of a discrete distribution \\(P\\) measures its uncertainty:\n\\[H(P) = -\\sum_x P(x) \\log P(x) \\tag{A.1}\\]\nHigh entropy = high uncertainty. A coin that always lands heads has zero entropy.\nKL Divergence. Measures how different distribution \\(Q\\) is from distribution \\(P\\):\n\\[D_\\text{KL}(P \\| Q) = \\sum_x P(x) \\log \\frac{P(x)}{Q(x)} \\tag{A.2}\\]\nNot symmetric: \\(D_\\text{KL}(P \\| Q) \\neq D_\\text{KL}(Q \\| P)\\) in general. Appears in the free energy principle (Chapter 15) and variational Bayes.\nMutual information. \\(I(X; Y) = D_\\text{KL}(P(X,Y) \\| P(X)P(Y))\\): how much knowing \\(X\\) reduces uncertainty about \\(Y\\).\n\n\nCode\nimport numpy as np\nimport matplotlib.pyplot as plt\n\np = np.linspace(0.001, 0.999, 500)\nH = -p * np.log2(p) - (1 - p) * np.log2(1 - p)\n\nfig, ax = plt.subplots(figsize=(7, 3.5))\nax.plot(p, H, color=\"#4e79a7\", linewidth=2)\nax.axvline(0.5, color=\"gray\", linestyle=\"--\", alpha=0.6)\nax.set_xlabel(\"p (probability of heads)\")\nax.set_ylabel(\"H(p) bits\")\nax.set_title(\"Shannon entropy of a Bernoulli distribution\")\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nFigure A.1: Shannon entropy of a Bernoulli distribution peaks at p=0.5 (maximum uncertainty) and is zero at the extremes.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>A</span>  <span class='chapter-title'>Mathematical Prerequisites</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-python.html",
+    "href": "appendix-b-python.html",
+    "title": "Appendix B — Python Setup and Code Reference",
+    "section": "",
+    "text": "Installing pixi\nAll code in this book runs inside a pixi-managed Python environment. This appendix explains how to set it up and reproduce any example from the text.\npixi is a fast cross-platform package manager. Install it with:",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Python Setup and Code Reference</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-python.html#installing-pixi",
+    "href": "appendix-b-python.html#installing-pixi",
+    "title": "Appendix B — Python Setup and Code Reference",
+    "section": "",
+    "text": "# macOS / Linux\ncurl -fsSL https://pixi.sh/install.sh | bash\n\n# Windows (PowerShell)\niwr -useb https://pixi.sh/install.ps1 | iex",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Python Setup and Code Reference</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-python.html#setting-up-the-environment",
+    "href": "appendix-b-python.html#setting-up-the-environment",
+    "title": "Appendix B — Python Setup and Code Reference",
+    "section": "Setting Up the Environment",
+    "text": "Setting Up the Environment\nFrom the root of the repository:\npixi install          # download and install all packages\npixi run setup        # register the Jupyter kernel\nThis creates a self-contained environment in .pixi/envs/default/. It does not touch your system Python or any other environments you have installed.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Python Setup and Code Reference</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-python.html#rendering-the-book",
+    "href": "appendix-b-python.html#rendering-the-book",
+    "title": "Appendix B — Python Setup and Code Reference",
+    "section": "Rendering the Book",
+    "text": "Rendering the Book\npixi run render       # build HTML → docs/\npixi run render-pdf   # build PDF → docs/\npixi run preview      # live preview in browser (auto-reloads on changes)\nThe render task sets QUARTO_PYTHON automatically so Quarto uses the pixi environment’s Python.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Python Setup and Code Reference</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-python.html#key-libraries",
+    "href": "appendix-b-python.html#key-libraries",
+    "title": "Appendix B — Python Setup and Code Reference",
+    "section": "Key Libraries",
+    "text": "Key Libraries\n\n\n\nLibrary\nPurpose\nFirst used\n\n\n\n\nnumpy\nNumerical arrays, linear algebra\nCh 1\n\n\nscipy\nStatistical distributions, optimization\nCh 2\n\n\nmatplotlib\nStatic plots\nCh 1\n\n\nplotly\nInteractive plots (HTML output)\nCh 3\n\n\npandas\nTabular data\nCh 4\n\n\nscikit-learn\nML algorithms\nCh 11\n\n\npymc\nBayesian modeling, MCMC\nCh 3\n\n\nnetworkx\nGraph structures\nCh 5\n\n\nscikit-fuzzy\nFuzzy sets and inference\nCh 9–10\n\n\npgmpy\nProbabilistic graphical models\nCh 5\n\n\ndowhy\nCausal effect estimation\nCh 13",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Python Setup and Code Reference</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-python.html#common-patterns",
+    "href": "appendix-b-python.html#common-patterns",
+    "title": "Appendix B — Python Setup and Code Reference",
+    "section": "Common Patterns",
+    "text": "Common Patterns\nRandom number generation (reproducible):\nimport numpy as np\nrng = np.random.default_rng(seed=42)   # seed for reproducibility\nx = rng.normal(0, 1, 100)\nPlotting (matplotlib):\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots(figsize=(8, 4))\nax.plot(x, y, color=\"#4e79a7\", linewidth=2)\nax.set_xlabel(\"x\"); ax.set_ylabel(\"y\")\nplt.tight_layout()\nplt.show()\nBayesian model (PyMC):\nimport pymc as pm\nwith pm.Model() as model:\n    mu = pm.Normal(\"mu\", mu=0, sigma=1)\n    obs = pm.Normal(\"obs\", mu=mu, sigma=0.5, observed=data)\n    trace = pm.sample(1000, tune=500, progressbar=False)\nFuzzy set (scikit-fuzzy):\nimport numpy as np\nimport skfuzzy as fuzz\nx = np.arange(0, 101, 1)\nmembership = fuzz.trimf(x, [20, 50, 80])   # triangular MF",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Python Setup and Code Reference</span>"
+    ]
+  },
+  {
+    "objectID": "appendix-b-python.html#troubleshooting",
+    "href": "appendix-b-python.html#troubleshooting",
+    "title": "Appendix B — Python Setup and Code Reference",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\nNo module named yaml when running quarto render directly: Always use pixi run render, not quarto render directly. The task sets QUARTO_PYTHON to the correct interpreter.\nSlow first render: PyMC compiles models with pytensor on first use; subsequent renders are faster.\npixi install fails on Windows for pymc: pymc is available on conda-forge for win-64; if the lock file is causing issues, delete pixi.lock and run pixi install again.",
+    "crumbs": [
+      "Appendices",
+      "<span class='chapter-number'>B</span>  <span class='chapter-title'>Python Setup and Code Reference</span>"
+    ]
+  }
+]

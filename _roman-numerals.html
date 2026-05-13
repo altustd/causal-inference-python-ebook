@@ -1,0 +1,25 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  function toRoman(n) {
+    var v = [1000,900,500,400,100,90,50,40,10,9,5,4,1];
+    var s = ['M','CM','D','CD','C','XC','L','XL','X','IX','V','IV','I'];
+    var r = '';
+    for (var i = 0; i < v.length; i++) {
+      while (n >= v[i]) { r += s[i]; n -= v[i]; }
+    }
+    return r;
+  }
+
+  // Chapter headings: only top-level (no dots = chapter level, not sub-section)
+  document.querySelectorAll('h1 .header-section-number').forEach(function (el) {
+    var t = el.textContent.trim();
+    if (/^\d+$/.test(t)) { el.textContent = toRoman(parseInt(t, 10)); }
+  });
+
+  // Sidebar TOC: chapter-level numbers only (no dots)
+  document.querySelectorAll('.sidebar-item .chapter-number').forEach(function (el) {
+    var t = el.textContent.trim();
+    if (/^\d+$/.test(t)) { el.textContent = toRoman(parseInt(t, 10)); }
+  });
+});
+</script>

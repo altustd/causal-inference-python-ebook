@@ -1,0 +1,95 @@
+---
+title: "The Bayesian Brain"
+---
+
+::: {.callout-note icon=false}
+## Learning Objectives
+
+- Describe the predictive processing hypothesis and its evidence base
+- Explain the free energy principle as a unifying account of perception and action
+- Connect Bayesian inference (Part I) to neural computation
+- Simulate a simple predictive coding model in Python
+:::
+
+## The Brain as a Prediction Machine
+
+There is a counterintuitive idea at the heart of modern computational neuroscience: the brain is not primarily a device for processing sensory information. It is primarily a device for generating predictions about sensory information, and only incidentally interested in the cases where those predictions are wrong.
+
+This view — predictive processing, or the *predictive coding* hypothesis — inverts the traditional picture. In the traditional view, sensory signals flow upward from retina to cortex, being progressively enriched and classified until we perceive the world. In the predictive processing view, the brain is constantly generating a top-down model of the world, propagating its predictions downward, and only passing *prediction errors* — the discrepancy between prediction and reality — upward.
+
+The evolutionary logic is appealing. The brain is metabolically expensive. Predicting what will happen and silencing the expected allows it to focus resources on the unexpected — which is, after all, what actually matters.
+
+## Perception as Bayesian Inference
+
+The predictive processing framework maps directly onto Bayesian inference. The brain's top-down model is a prior. The sensory evidence is a likelihood. Perception is the posterior — the brain's best guess about the state of the world given its priors and the sensory data.
+
+This is not merely a metaphor. The mathematical framework of Bayesian inference correctly predicts many perceptual phenomena:
+
+- **Multisensory integration.** When vision and proprioception give conflicting estimates of hand position, the brain combines them in proportion to their reliability — precisely the Bayesian optimal weighting.
+- **Perceptual illusions.** Many illusions arise from the brain's prior being strong enough to override sensory evidence. The checker-shadow illusion: context tells the brain a square is in shadow, so it interprets it as lighter than it is, even when the pixel values are identical.
+- **Hallucinations.** If prediction errors are suppressed (as may occur in psychosis or under certain drugs), the brain's prior takes over and generates experience without sensory grounding.
+
+## The Free Energy Principle
+
+Karl Friston's free energy principle attempts to unify perception and action under a single imperative: minimize *surprise* — the long-run improbability of sensory observations under the agent's internal model.
+
+Since surprise is intractable to compute directly, the brain minimizes a tractable bound called *free energy* — which equals surprise plus the divergence between the agent's approximate beliefs and its true posterior. There are two ways to minimize free energy: update your internal model to match sensory observations (perception), or act on the world to bring observations in line with your predictions (action).
+
+This framing makes action and perception two sides of the same coin, unified under a single objective.
+
+```{python}
+#| label: fig-predictive-coding
+#| fig-cap: "Simple predictive coding: the model updates its prediction to minimize prediction error across 30 time steps."
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(1)
+
+# Generative model: signal = slow sinusoid
+t = np.linspace(0, 6 * np.pi, 100)
+true_signal = np.sin(t) + 0.3 * np.sin(3 * t)
+noisy_obs = true_signal + rng.normal(0, 0.4, len(t))
+
+# Predictive coding: initialize with flat prediction, update via prediction error
+prediction = np.zeros(len(t))
+learning_rate = 0.3
+
+predictions_over_time = []
+errors_over_time = []
+
+pred = 0.0
+for i in range(len(t)):
+    pred_error = noisy_obs[i] - pred
+    pred += learning_rate * pred_error
+    predictions_over_time.append(pred)
+    errors_over_time.append(abs(pred_error))
+
+fig, axes = plt.subplots(2, 1, figsize=(10, 6))
+
+axes[0].plot(t, true_signal, 'k-', label='True signal', alpha=0.5, linewidth=1)
+axes[0].plot(t, noisy_obs, '.', color='gray', markersize=3, label='Noisy observation', alpha=0.6)
+axes[0].plot(t, predictions_over_time, color='#4e79a7', linewidth=2, label='Brain prediction')
+axes[0].set_ylabel("Value")
+axes[0].set_title("Predictive coding: tracking a signal through prediction error")
+axes[0].legend(fontsize=9)
+
+axes[1].plot(t, errors_over_time, color='#e15759', linewidth=1.5)
+axes[1].set_ylabel("|Prediction error|")
+axes[1].set_xlabel("Time")
+axes[1].set_title("Prediction error decreases as model adapts")
+
+plt.tight_layout()
+plt.show()
+```
+
+## Summary
+
+- The predictive processing hypothesis proposes that the brain is primarily a prediction machine: it generates top-down predictions and propagates only prediction errors upward.
+- Perception is formally equivalent to Bayesian inference: the brain's internal model is the prior, sensory evidence provides the likelihood, and the perceived world is the posterior.
+- The free energy principle unifies perception and action: both serve to minimize surprise (the long-run improbability of experience).
+- Perceptual illusions, multisensory integration, and hallucinations are all naturally explained within the Bayesian brain framework.
+
+## Further Reading
+
+@friston2010free is the foundational paper. Andy Clark's *Surfing Uncertainty* (2015) is the accessible book-length treatment of predictive processing. For the multisensory integration evidence, Ernst and Banks (2002), *Humans integrate visual and haptic information in a statistically optimal fashion* (*Nature*), is a landmark experimental result.

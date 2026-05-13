@@ -1,0 +1,99 @@
+---
+title: "Fuzzy Sets and Membership Functions"
+---
+
+::: {.callout-note icon=false}
+## Learning Objectives
+
+- Define a fuzzy set and its membership function
+- Describe common membership function shapes and when to use each
+- Apply the standard fuzzy set operations: union, intersection, complement
+- Define linguistic variables and understand their role in fuzzy systems
+:::
+
+## The Spectrum of Belonging
+
+In classical set theory, an element either belongs to a set or it does not. In fuzzy set theory, proposed by Lotfi Zadeh in 1965, an element belongs to a set to a *degree*, expressed as a number in $[0, 1]$.
+
+Formally, a fuzzy set $A$ in a universe $X$ is defined by a membership function:
+
+$$\mu_A : X \to [0, 1]$$ {#eq-membership}
+
+For any element $x \in X$, $\mu_A(x) = 0$ means $x$ is definitely not in $A$; $\mu_A(x) = 1$ means $x$ is definitely in $A$; and any value between means partial membership.
+
+A classical (crisp) set is a special case: $\mu_A(x) \in \{0, 1\}$ for all $x$.
+
+## Membership Function Shapes
+
+The membership function is a design choice. Several standard shapes recur throughout applications:
+
+**Triangular:** rises linearly to a peak and falls linearly. Good for representing "approximately equal to a target value."
+
+**Trapezoidal:** flat at the top — a range of full membership before gradual fall-off at the edges.
+
+**Gaussian:** smooth, symmetric bell curve. Natural when the concept has a central prototype and uncertainty increases with distance from it.
+
+**Sigmoid:** S-shaped. Useful for unipolar concepts like "large" or "fast," where there is no natural peak but a one-sided gradual transition.
+
+The choice of shape should reflect the semantics of the concept being represented. There is no universal right answer — the function is a model of human judgment, and different experts may draw it differently.
+
+## Fuzzy Set Operations
+
+The standard operations on fuzzy sets generalize their classical counterparts:
+
+**Complement:** $\mu_{\bar{A}}(x) = 1 - \mu_A(x)$
+
+**Intersection (AND):** $\mu_{A \cap B}(x) = \min(\mu_A(x), \mu_B(x))$
+
+**Union (OR):** $\mu_{A \cup B}(x) = \max(\mu_A(x), \mu_B(x))$
+
+These are the standard min/max operators introduced by Zadeh. Alternative t-norms and t-conorms exist (product, Łukasiewicz), each with different mathematical properties, but the min/max versions remain the most widely used.
+
+## Linguistic Variables
+
+A **linguistic variable** is a variable whose values are words or phrases in a natural language, each described by a fuzzy set. Temperature might be a linguistic variable with values *cold*, *cool*, *comfortable*, *warm*, and *hot* — five fuzzy sets defined over the same numerical domain.
+
+Linguistic variables bridge the gap between human qualitative judgment and numerical computation. An expert who thinks in terms of "the reactor is running hot" can communicate directly with a fuzzy controller through linguistic variables, without translating their knowledge into precise numerical thresholds.
+
+```{python}
+#| label: fig-membership-functions
+#| fig-cap: "Fuzzy membership functions for the linguistic variable 'temperature'. Each label covers a range with gradual transitions."
+
+import numpy as np
+import skfuzzy as fuzz
+import matplotlib.pyplot as plt
+
+temp = np.arange(0, 101, 1)
+
+cold      = fuzz.trapmf(temp, [0,  0,  10, 25])
+cool      = fuzz.trimf(temp,  [10, 25, 40])
+comfortable = fuzz.trimf(temp, [25, 40, 60])
+warm      = fuzz.trimf(temp,  [45, 60, 75])
+hot       = fuzz.trapmf(temp, [65, 80, 100, 100])
+
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.plot(temp, cold,        "#4e79a7", lw=2, label="Cold")
+ax.plot(temp, cool,        "#76b7b2", lw=2, label="Cool")
+ax.plot(temp, comfortable, "#59a14f", lw=2, label="Comfortable")
+ax.plot(temp, warm,        "#f28e2b", lw=2, label="Warm")
+ax.plot(temp, hot,         "#e15759", lw=2, label="Hot")
+
+ax.set_xlabel("Temperature (°F)")
+ax.set_ylabel("Degree of membership")
+ax.set_title("Linguistic variable: Temperature")
+ax.legend(loc="upper right")
+ax.set_ylim(-0.05, 1.15)
+plt.tight_layout()
+plt.show()
+```
+
+## Summary
+
+- A fuzzy set generalizes the classical notion by assigning each element a degree of membership in $[0,1]$.
+- Common membership function shapes — triangular, trapezoidal, Gaussian, sigmoid — are chosen to reflect the semantics of the concept.
+- Fuzzy set operations (complement, intersection, union) generalize their classical counterparts using $1-x$, min, and max respectively.
+- Linguistic variables assign fuzzy set labels to natural language terms, enabling numerical systems to reason with qualitative categories.
+
+## Further Reading
+
+@zadeh1965fuzzy is the original paper — short, readable, and historically important. @kosko1993fuzzy provides a broader and more philosophical treatment. The `scikit-fuzzy` library used here is well-documented and covers all the material in Chapters 9 and 10.
