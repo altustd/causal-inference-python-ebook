@@ -12,10 +12,10 @@ book:
   downloads: [pdf]
 
   chapters:
+    - index.qmd
     - preface.qmd
     - part: "Part I: Foundations of Reasoning Under Uncertainty"
       chapters:
-        - index.qmd
         - 02-probability-as-belief.qmd
         - 03-bayesian-inference.qmd
     - part: "Part II: Causal Inference"
